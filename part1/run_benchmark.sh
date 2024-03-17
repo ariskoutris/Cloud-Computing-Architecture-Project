@@ -59,7 +59,7 @@ for BENCHMARK in "some-memcached" "ibench-cpu" "ibench-l1d" "ibench-l1i" "ibench
         # Replace multiple spaces with a single comma for CSV format
         gsub(/ +/, ",")
         print
-    }' "$OUTPUT_FILE"
+    }' "results/$OUTPUT_FILE"
 } > "results/$BENCHMARK.csv"
 
   if [ "$BENCHMARK" != "some-memcached" ]; then
