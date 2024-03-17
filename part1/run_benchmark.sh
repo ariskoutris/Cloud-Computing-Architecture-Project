@@ -46,8 +46,21 @@ for BENCHMARK in "some-memcached" "ibench-cpu" "ibench-l1d" "ibench-l1i" "ibench
   echo "Benchmark complete."
 
   echo "Downloading results from $CLIENT_MEASURE..."
-  gcloud compute scp ubuntu@"$CLIENT_MEASURE":~/$OUTPUT_FILE ./ --zone europe-west3-a --ssh-key-file ~/.ssh/cloud-computing
+  gcloud compute scp ubuntu@"$CLIENT_MEASURE":~/$OUTPUT_FILE ./results/ --zone europe-west3-a --ssh-key-file ~/.ssh/cloud-computing
   echo "Results downloaded."
+
+  # Start processing
+{
+    # Print the header
+    echo "type,avg,std,min,p5,p10,p50,p67,p75,p80,p85,p90,p95,p99,p999,p9999,QPS,target"
+
+    # Process the file
+    awk '/^read/ {
+        # Replace multiple spaces with a single comma for CSV format
+        gsub(/ +/, ",")
+        print
+    }' "$OUTPUT_FILE"
+} > "results/$BENCHMARK.csv"
 
   if [ "$BENCHMARK" != "some-memcached" ]; then
     echo "Removing interference pod for $BENCHMARK..."
