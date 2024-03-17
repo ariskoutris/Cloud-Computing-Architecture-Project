@@ -31,8 +31,8 @@ def parse_file_to_dataframe(file_path):
     return pd.concat(dfs, ignore_index=True)
 
 def aggregate_metrics(df):
-    means = df.groupby('target').agg({'QPS': 'mean', 'p95': 'mean'})
-    errs = df.groupby('target').agg({'QPS': 'std', 'p95': 'std'})
+    means = df.groupby('target').agg({'QPS': 'mean', 'p95': 'mean'}).sort_values('QPS')
+    errs = df.groupby('target').agg({'QPS': 'std', 'p95': 'std'}).loc[means.index]
     return means, errs
 
 def create_figure(df_list):
@@ -44,7 +44,7 @@ def create_figure(df_list):
     plt.ylabel('$95^{th}$ Percentile Latency (ms)')
     plt.xlim(0,55000)
     plt.ylim(0, 10)
-    plt.title('QPS vs Latency (3 Runs Average)')
+    plt.title('QPS vs Latency (3 Run Average)')
     plt.legend()
     plt.tight_layout()
     return fig
