@@ -23,7 +23,7 @@ for BENCHMARK in "some-memcached" "ibench-cpu" "ibench-l1d" "ibench-l1i" "ibench
   fi
 
   # Output file name
-  OUTPUT_FILE="benchmark_$BENCHMARK.txt"
+  OUTPUT_FILE="$BENCHMARK.txt"
 
   # Commands to run on CLIENT_MEASURE VM
   # Note: Using single quotes to delay variable expansion until executed on the remote machine
@@ -49,16 +49,23 @@ for BENCHMARK in "some-memcached" "ibench-cpu" "ibench-l1d" "ibench-l1i" "ibench
   gcloud compute scp ubuntu@"$CLIENT_MEASURE":~/$OUTPUT_FILE ./results/ --zone europe-west3-a --ssh-key-file ~/.ssh/cloud-computing
   echo "Results downloaded."
 
-  # Start processing
 {
-    # Print the header
-    echo "type,avg,std,min,p5,p10,p50,p67,p75,p80,p85,p90,p95,p99,p999,p9999,QPS,target"
+    # Print the header with an extra column for the iteration number
+    echo "run_id,type,avg,std,min,p5,p10,p50,p67,p75,p80,p85,p90,p95,p99,p999,p9999,QPS,target"
 
     # Process the file
-    awk '/^read/ {
+    awk '
+    BEGIN {
+        run_id = 1
+    }
+    /CPU Usage Stats/ {
+        run_id++
+        next
+    }
+    /^read/ {
         # Replace multiple spaces with a single comma for CSV format
         gsub(/ +/, ",")
-        print
+        print run_id "," $0
     }' "results/$OUTPUT_FILE"
 } > "results/$BENCHMARK.csv"
 

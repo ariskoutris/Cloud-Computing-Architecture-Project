@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 
 sns.set_theme()
 
-interefence_types = ['no_interference', 'ibench-cpu', 'ibench-l1d', 'ibench-l1i', 'ibench-l2', 'ibench-llc', 'ibench-membw']
+interfence_types = ['some-memcached', 'ibench-cpu', 'ibench-l1d', 'ibench-l1i', 'ibench-l2', 'ibench-llc', 'ibench-membw']
+label_map = {key: key for key in interfence_types if key != 'some-memcached'}
+label_map['some-memcached'] = 'no-interference'
 
 def parse_file_to_dataframe(file_path):
     with open(file_path, 'r') as file:
@@ -37,9 +39,9 @@ def aggregate_metrics(df):
 
 def create_figure(df_list):
     fig = plt.figure(figsize=(8, 6))
-    for interference_type in interefence_types:
+    for interference_type in interfence_types:
         means, errs = aggregate_metrics(df_list[interference_type])
-        plt.errorbar(means['QPS'], means['p95']/1000, xerr=errs['QPS'],  yerr=errs['p95']/1000, fmt='--o', markersize='4', elinewidth=1, capsize=3, label=interference_type)   
+        plt.errorbar(means['QPS'], means['p95']/1000, xerr=errs['QPS'],  yerr=errs['p95']/1000, fmt='--o', markersize='4', elinewidth=1, capsize=3, label=label_map[interference_type])   
     plt.xlabel('QPS')
     plt.ylabel('$95^{th}$ Percentile Latency (ms)')
     plt.xlim(0,55000)
@@ -51,8 +53,8 @@ def create_figure(df_list):
     
 if __name__ == "__main__":
     result_dfs = {}
-    for interference_type in interefence_types:
-        file_path = f'{interference_type}.txt'
-        result_dfs[interference_type] = parse_file_to_dataframe(file_path)
+    for interference_type in interfence_types:
+        file_path = f'results/{interference_type}.csv'
+        result_dfs[interference_type] = pd.read_csv(file_path)
     fig = create_figure(result_dfs)
     fig.savefig('figure.png')
