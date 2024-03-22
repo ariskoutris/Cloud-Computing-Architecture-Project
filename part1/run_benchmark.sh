@@ -8,19 +8,18 @@ CLIENT_AGENT=("$(kubectl get nodes -o wide | awk '/client-agent/ {print $1}')")
 CLIENT_MEASURE=("$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')")
 
 # Commands to run on CLIENT_AGENT VM
-CLIENT_AGENT_COMMANDS="./memcache-perf/mcperf -T 16 -A"
+# Note: Use nohup to run the command in the background and redirect the output to /dev/null
+CLIENT_AGENT_COMMANDS="nohup ./memcache-perf/mcperf -T 16 -A > /dev/null 2>&1 & echo \$! > mcperf.pid"
 
 # Extract MEMCACHED_IP
 MEMCACHED_IP=$(kubectl get pods -o wide | awk '/some-memcached/ {print $6}')
 
+# Run command on CLIENT_AGENT VM
+echo "Launching mcperf client load agent on $CLIENT_AGENT..."
+gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@$CLIENT_AGENT --zone europe-west3-a --command "$CLIENT_AGENT_COMMANDS"
+sleep 30
+
 for BENCHMARK in "some-memcached" "ibench-cpu" "ibench-l1d" "ibench-l1i" "ibench-l2" "ibench-llc" "ibench-membw"; do
-  if [ "$BENCHMARK" != "some-memcached" ]; then
-    echo "Creating interference pod for $BENCHMARK..."
-    kubectl create -f interference/$BENCHMARK.yaml
-    echo "Wait for 60 seconds for the interference pod to be up and running..."
-    sleep 60
-    kubectl get pods -o wide
-  fi
 
   # Output file name
   OUTPUT_FILE="$BENCHMARK.txt"
@@ -35,10 +34,15 @@ for BENCHMARK in "some-memcached" "ibench-cpu" "ibench-l1d" "ibench-l1i" "ibench
   done
   "
 
-  # Run command on CLIENT_AGENT VM
   echo "---------------------$BENCHMARK---------------------"
-  echo "Launching mcperf client load agent on $CLIENT_AGENT..."
-  gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@$CLIENT_AGENT --zone europe-west3-a --command "$CLIENT_AGENT_COMMANDS"
+
+  if [ "$BENCHMARK" != "some-memcached" ]; then
+    echo "Creating interference pod for $BENCHMARK..."
+    kubectl create -f interference/$BENCHMARK.yaml
+    echo "Wait for 60 seconds for the interference pod to be up and running..."
+    sleep 60
+    kubectl get pods -o wide
+  fi
 
   # Run commands on CLIENT_MEASURE VM
   echo "Running benchmarks on $CLIENT_MEASURE..."
@@ -74,3 +78,6 @@ for BENCHMARK in "some-memcached" "ibench-cpu" "ibench-l1d" "ibench-l1i" "ibench
     kubectl delete pods $BENCHMARK
   fi
 done
+
+echo "Terminating mcperf client load agent on $CLIENT_AGENT..."
+gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@$CLIENT_AGENT --zone europe-west3-a --command "kill \$(cat mcperf.pid) && rm mcperf.pid"
