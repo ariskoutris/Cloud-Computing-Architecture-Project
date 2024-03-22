@@ -17,7 +17,8 @@ echo "Confirming that the memcached service is running..."
 kubectl get pods -o wide
 
 # VM Names
-VM_NAMES=("$(kubectl get nodes -o wide | awk '/client-agent|client-measure/ {print $1}')")
+AGENT_VM=("$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')")
+CLIENT_VM=("$(kubectl get nodes -o wide | awk '/client-agent/ {print $1}')")
 
 # Commands to run on each VM
 SSH_COMMANDS="
@@ -33,9 +34,10 @@ git checkout 0afbe9b
 make
 "
 
-for VM_NAME in "${VM_NAMES[@]}"; do
-    echo "Setting up mcperf on $VM_NAME..."
-    gcloud compute ssh ubuntu@"$VM_NAME" --zone europe-west3-a --command "$SSH_COMMANDS"
-done
+
+echo "Setting up mcperf on $AGENT_VM..."
+gcloud compute ssh ubuntu@"$AGENT_VM" --zone europe-west3-a --command "$SSH_COMMANDS"
+echo "Setting up mcperf on $CLIENT_VM..."
+gcloud compute ssh ubuntu@"$CLIENT_VM" --zone europe-west3-a --command "$SSH_COMMANDS"
 
 echo "Setup complete."
