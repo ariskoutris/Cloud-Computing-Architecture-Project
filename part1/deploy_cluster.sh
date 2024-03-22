@@ -1,10 +1,12 @@
 #!/bin/bash
 
-# Set the cluster name variable
+export KOPS_STATE_STORE=gs://cca-eth-2024-group-018-akoutris/
 CLUSTER_NAME="part1.k8s.local"
 PROJECT=`gcloud config get-value project`
+
 echo "Creating a new cluster in project ${PROJECT}..."
 kops create -f part1.yaml
+kops create secret --name part1.k8s.local sshpublickey admin -i ~/.ssh/cloud-computing.pub
 
 # Update the cluster and apply the changes
 echo "Updating and applying changes to the cluster..."
