@@ -37,7 +37,7 @@ for PARSEC_JOB in "${PARSEC_JOBS[@]}"; do
         done
         
         kubectl get jobs
-        (kubectl logs $(kubectl get pods --selector=job-name=$PARSEC_JOB --output=jsonpath='{.items[*].metadata.name}')) > results/${PARSEC_JOB}_${IBENCH_SOI}.txt
+        (kubectl logs $(kubectl get pods --selector=job-name=$PARSEC_JOB --output=jsonpath='{.items[*].metadata.name}')) > results_A/${PARSEC_JOB}_${IBENCH_SOI}.txt
 
         if [ "$IBENCH_SOI" != "no-interference" ]; then
             echo "Removing interference pod for $IBENCH_SOI..."
