@@ -12,7 +12,7 @@ spec:
         name: parsec-ferret
         imagePullPolicy: Always
         command: ["/bin/sh"]
-        args: ["-c", "./run -a run -S parsec -p ferret -i native -n 1"]
+        args: ["-c", "./run -a run -S parsec -p ferret -i native -n ${N_THREADS}"]
       restartPolicy: Never
       nodeSelector:
         cca-project-nodetype: "parsec"
