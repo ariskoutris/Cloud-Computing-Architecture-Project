@@ -3,7 +3,7 @@
 # Array of PARSEC Jobs
 PARSEC_JOBS=("parsec-blackscholes" "parsec-canneal" "parsec-dedup" "parsec-ferret" "parsec-freqmine" "parsec-radix" "parsec-vips")
 
-# Array of Sources of Interference (IBENCH_SOI) Benchmarks
+# Array of Sources of Interference Benchmarks
 SOI_BENCHMARKS=("no-interference" "ibench-cpu" "ibench-l1d" "ibench-l1i" "ibench-l2" "ibench-llc" "ibench-membw")
 
 for PARSEC_JOB in "${PARSEC_JOBS[@]}"; do
