@@ -29,7 +29,7 @@ This project is a part of the course Cloud Computing Architecture at ETH Zurich.
 ## Getting Started
 See below each part's description and how to run it.
 ### Part 1:
-This Part focuses on performing a memcached microbenchmark on the cluster with various types of interference. The goal is to understand how different interferences affect cluster performance.
+This part focuses on performing a memcached microbenchmark on the cluster with various types of interference. The goal is to understand how different interferences affect cluster performance.
 To run the benchmark, sequentially run the following commands, to deploy the cluster, setup the benchmark, run the benchmark and then delete the cluster:
 ```bash
 $ cd part1
@@ -39,7 +39,19 @@ $ ./run_benchmark.sh
 $ ./delete_cluster.sh
 ```
 Note:
-By default, [part1.yaml](part1/part1.yaml) is used to deploy the cluster in `gmanos` bucket. Make sure to change the bucket name to your bucket.
+The cluster configuration is stored in the bucket `gs://cca-eth-2024-group-018-ethzid`. Make sure to replace `ethzid` with your ETH username in the following files: [part1.yaml](part1/part1.yaml), [deploy_cluster.sh](part1/deploy_cluster.sh), [delete_cluster.sh](part1/delete_cluster.sh)
+
+### Part 2:
+This part focuses on running various workloads from the PARSEC benchmark suite and analyzing their sensitivity to various parameters. For part 2A, various types of interference are set into place, to investigate how they affect performance. For part 2B, execution is split onto multiple threads to study the impact of parallelism. To run the benchmarks, replace {X} with either A or B for parts 2A and 2B respectivelly, and sequentially run the following commands, to deploy the cluster, run the benchmark and then delete the cluster:
+```bash
+$ cd part2
+$ ./deploy_cluster_{X}.sh
+$ ./run_benchmark_{X}.sh
+$ ./delete_cluster_{X}.sh
+```
+Note:
+The cluster configuration is stored in the bucket `gs://cca-eth-2024-group-018-ethzid`. Make sure to replace `ethzid` with your ETH username in the following files: [part2a.yaml](part2/part2a.yaml), [part2b.yaml](part2/part2b.yaml), [deploy_cluster_A.sh](part2/deploy_cluster_A.sh), [delete_cluster_A.sh](part2/delete_cluster_A.sh), [deploy_cluster_B.sh](part2/deploy_cluster_B.sh), [delete_cluster_B.sh](part2/delete_cluster_B.sh)
+
 
 ### Running it locally
 
