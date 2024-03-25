@@ -50,7 +50,7 @@ def create_figure(df_list):
     plt.xlabel('Number of threads')
     plt.ylabel('Speedup')
     plt.xlim(1,8)
-    plt.ylim(1, 10)
+    plt.ylim(1, 6.5)
     plt.title('Speedup vs Parallel Workload (Normalized time)')
     plt.legend()
     plt.tight_layout()
