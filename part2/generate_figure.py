@@ -1,11 +1,13 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import itertools
 
 sns.set_theme()
 
 benchmarks = ['blackscholes', 'freqmine', 'vips', 'dedup', 'radix', 'canneal', 'ferret']
 label_map = {key: key for key in benchmarks }
+marker = itertools.cycle(('.', 's', 'X', '^', '*', 'p', '>')) 
 
 def create_figure(df_list):
     fig = plt.figure(figsize=(8, 6))
@@ -44,11 +46,11 @@ def create_figure(df_list):
         capsize=4
     )
     for benchmark in benchmarks:
-        plt.errorbar(df_list['Thread'], df_list[benchmark], fmt='--o', markersize='4', elinewidth=1, capsize=3, label=label_map[benchmark])   
+        plt.plot(df_list['Thread'], df_list[benchmark], marker=next(marker), markersize='4', linewidth=1, label=label_map[benchmark])   
     plt.xlabel('Number of threads')
     plt.ylabel('Speedup')
-    plt.xlim(0,10)
-    plt.ylim(0, 10)
+    plt.xlim(1,8)
+    plt.ylim(1, 10)
     plt.title('Speedup vs Parallel Workload (Normalized time)')
     plt.legend()
     plt.tight_layout()
@@ -58,4 +60,4 @@ if __name__ == "__main__":
     file_path = f'results_B_flipped_cols.csv'
     result_dfs = pd.read_csv(file_path)
     fig = create_figure(result_dfs)
-    fig.savefig('figure.png')
+    fig.savefig('figure_2b.png')
