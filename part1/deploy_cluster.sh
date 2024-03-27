@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export KOPS_STATE_STORE=gs://cca-eth-2024-group-018-akoutris/
 CLUSTER_NAME="part1.k8s.local"
 PROJECT=`gcloud config get-value project`
 
