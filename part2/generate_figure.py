@@ -48,8 +48,8 @@ def create_figure(df_list):
     for benchmark in benchmarks:
         plt.plot(df_list['Thread'], df_list[benchmark], marker=next(marker), markersize='4', linewidth=1, label=label_map[benchmark])   
     plt.xlabel('Number of threads')
-    plt.ylabel('Speedup')
-    plt.xlim(1,8)
+    plt.ylabel('Speedupx')
+    plt.xlim(0,9)
     plt.ylim(1, 6.5)
     plt.title('Speedup vs Parallel Workload (Normalized time)')
     plt.legend()
@@ -57,7 +57,7 @@ def create_figure(df_list):
     return fig
     
 if __name__ == "__main__":
-    file_path = f'results_B_flipped_cols.csv'
+    file_path = f'part2/results_B_flipped_cols.csv'
     result_dfs = pd.read_csv(file_path)
     fig = create_figure(result_dfs)
     fig.savefig('figure_2b.png')
