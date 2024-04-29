@@ -12,6 +12,6 @@ spec:
       command: ["/bin/sh"]
       args: ["-c", "taskset -c 0 ./memcached -t 1 -u memcache"]
   nodeSelector:
-    cca-project-nodetype: "memcached"
+    cca-project-nodetype: "node-a-2core"
 
 
