@@ -11,8 +11,13 @@ spec:
       - image: anakli/cca:splash2x_radix
         name: parsec-radix
         imagePullPolicy: Always
+        resources: 
+          requests: 
+            cpu: "0.9"
+          limits: 
+            cpu: "1.0"
         command: ["/bin/sh"]
-        args: ["-c", "./run -a run -S splash2x -p radix -i native -n ${N_THREADS}"]
+        args: ["-c", "taskset -c 3 ./run -a run -S splash2x -p radix -i native -n 8"]
       restartPolicy: Never
       nodeSelector:
-        cca-project-nodetype: "parsec"
+        cca-project-nodetype: "node-b-4core"

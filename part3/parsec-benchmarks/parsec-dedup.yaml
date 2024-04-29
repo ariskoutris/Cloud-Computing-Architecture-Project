@@ -11,8 +11,13 @@ spec:
       - image: anakli/cca:parsec_dedup
         name: parsec-dedup
         imagePullPolicy: Always
+        resources: 
+          requests: 
+            cpu: "2.8"
+          limits: 
+            cpu: "3.0"
         command: ["/bin/sh"]
-        args: ["-c", "./run -a run -S parsec -p dedup -i native -n ${N_THREADS}"]
+        args: ["-c", "taskset -c 0-4 ./run -a run -S parsec -p dedup -i native -n 5"]
       restartPolicy: Never
       nodeSelector:
-        cca-project-nodetype: "parsec"
+        cca-project-nodetype: "node-c-8core"

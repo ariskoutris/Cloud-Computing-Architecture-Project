@@ -17,19 +17,19 @@ echo "Confirming that the memcached service is running..."
 kubectl get pods -o wide
 
 # VM Names
-AGENT_VM_A=${("$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $1}')")[0]}
-AGENT_VM_B=${("$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $1}')")[0]}
-CLIENT_VM=${("$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')")[0]}
+AGENT_VM_A=("$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $1}')")
+AGENT_VM_B=("$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $1}')")
+CLIENT_VM=("$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')")
 
 # Commands to run on each VM
 SSH_COMMANDS="
-sudo sh -c "echo deb-src http://europe-west3.gce.archive.ubuntu.com/ubuntu/ jammy main restricted >> /etc/apt/sources.list"
-sudo apt-get update
-sudo apt-get install libevent-dev libzmq3-dev git make g++ --yes
-sudo apt-get build-dep memcached --yes
-git clone https://github.com/eth-easl/memcache-perf-dynamic.git
-cd memcache-perf-dynamic
-make
+    sudo sh -c 'echo deb-src http://europe-west3.gce.archive.ubuntu.com/ubuntu/ jammy main restricted >> /etc/apt/sources.list'
+    sudo apt-get update
+    sudo apt-get install libevent-dev libzmq3-dev git make g++ --yes
+    sudo apt-get build-dep memcached --yes
+    git clone https://github.com/eth-easl/memcache-perf-dynamic.git
+    cd memcache-perf-dynamic
+    make
 "
 
 

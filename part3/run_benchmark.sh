@@ -5,8 +5,8 @@ INTERNAL_AGENT_A_IP=$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $
 INTERNAL_AGENT_B_IP=$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $6}')
 
 # VM Names
-AGENT_VM_A=${("$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $1}')")[0]}
-AGENT_VM_B=${("$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $1}')")[0]}
+AGENT_VM_A=("$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $1}')")
+AGENT_VM_B=("$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $1}')")
 
 # Commands to run on CLIENT_AGENT VM
 # Note: Use nohup to run the command in the background and redirect the output to /dev/null
@@ -37,12 +37,16 @@ echo "Running benchmarks on $CLIENT_MEASURE..."
 gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$CLIENT_MEASURE" --zone europe-west3-a --command "$CLIENT_MEASURE_COMMANDS"
 echo "Benchmark complete."
 
+# Make sure memcached is running
+sleep 30
+
+# Run the PARSEC jobs script
+echo "Running the PARSEC jobs script..."
+sh ./run_parsec.sh
+
 echo "Downloading results from $CLIENT_MEASURE..."
 gcloud compute scp ubuntu@"$CLIENT_MEASURE":~/$OUTPUT_FILE ./results/ --zone europe-west3-a --ssh-key-file ~/.ssh/cloud-computing
 echo "Results downloaded."
-
-# Run the PARSEC jobs script
-sleep 30
 
 echo "Getting the execution time of each batch job..."
 kubectl get pods -o json > results.json

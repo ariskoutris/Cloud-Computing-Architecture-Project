@@ -11,8 +11,13 @@ spec:
       - image: anakli/cca:parsec_canneal
         name: parsec-canneal
         imagePullPolicy: Always
+        resources: 
+          requests: 
+            cpu: "7.6"
+          limits: 
+            cpu: "8.0"
         command: ["/bin/sh"]
-        args: ["-c", "./run -a run -S parsec -p canneal -i native -n ${N_THREADS}"]
+        args: ["-c", "taskset -c 5-7 ./run -a run -S parsec -p canneal -i native -n 3"]
       restartPolicy: Never
       nodeSelector:
-        cca-project-nodetype: "parsec"
+        cca-project-nodetype: "node-c-8core"

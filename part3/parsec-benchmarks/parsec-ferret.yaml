@@ -11,8 +11,13 @@ spec:
       - image: anakli/cca:parsec_ferret
         name: parsec-ferret
         imagePullPolicy: Always
+        resources: 
+          requests: 
+            cpu: "1.5"
+          limits: 
+            cpu: "2.0"
         command: ["/bin/sh"]
-        args: ["-c", "./run -a run -S parsec -p ferret -i native -n ${N_THREADS}"]
+        args: ["-c", "taskset -c 0-2 ./run -a run -S parsec -p ferret -i native -n 6"]
       restartPolicy: Never
       nodeSelector:
-        cca-project-nodetype: "parsec"
+        cca-project-nodetype: "node-b-4core"
