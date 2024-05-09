@@ -1,5 +1,5 @@
 #!/bin/bash
-
+export KOPS_STATE_STORE=gs://cca-eth-2024-group-018-mtsanta/
 CLUSTER_NAME="part3.k8s.local"
 PROJECT=`gcloud config get-value project`
 
@@ -8,7 +8,7 @@ kops create -f part3.yaml
 
 # Update the cluster and apply the changes
 echo "Updating and applying changes to the cluster..."
-kops update cluster --name ${CLUSTER_NAME} --yes --admin
+kops update cluster --name part3.k8s.local --yes --admin
 
 # Check the exit status of the kops update cluster command
 if [ $? -ne 0 ]; then
