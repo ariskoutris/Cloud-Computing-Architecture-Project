@@ -33,7 +33,7 @@ while true; do
     if $all_jobs_complete; then
         break
     fi
-    sleep 3
+    sleep 0.1
 done
 
  while true; do
@@ -52,7 +52,7 @@ done
     if $all_jobs_complete; then
         break
     fi
-    sleep 3
+    sleep 0.1
 done
 
 for PARSEC_JOB in "${PARSEC_JOBS[@]}"; do
