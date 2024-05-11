@@ -10,14 +10,16 @@ spec:
       containers:
       - image: anakli/cca:parsec_canneal
         name: parsec-canneal
-        imagePullPolicy: Always
-        resources: 
-          requests: 
-            cpu: "7.6"
-          limits: 
-            cpu: "8.0"
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "1.6"
+            memory: "6Gi"
+          limits:
+            cpu: "2"
+            memory: "8Gi"
         command: ["/bin/sh"]
-        args: ["-c", "taskset -c 5-7 ./run -a run -S parsec -p canneal -i native -n 3"]
+        args: ["-c", "./run -a run -S parsec -p canneal -i native -n 4"]
       restartPolicy: Never
       nodeSelector:
-        cca-project-nodetype: "node-c-8core"
+        cca-project-nodetype: "node-b-4core"

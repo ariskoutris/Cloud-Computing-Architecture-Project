@@ -10,12 +10,14 @@ spec:
       containers:
       - image: anakli/cca:parsec_freqmine
         name: parsec-freqmine
-        imagePullPolicy: Always
-        resources: 
-          requests: 
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
             cpu: "7.5"
-          limits: 
-            cpu: "8.0"
+            memory: "4Gi"
+          limits:
+            cpu: "8"
+            memory: "6Gi"
         command: ["/bin/sh"]
         args: ["-c", "taskset -c 0-7 ./run -a run -S parsec -p freqmine -i native -n 8"]
       restartPolicy: Never

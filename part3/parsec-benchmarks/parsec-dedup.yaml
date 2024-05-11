@@ -10,14 +10,16 @@ spec:
       containers:
       - image: anakli/cca:parsec_dedup
         name: parsec-dedup
-        imagePullPolicy: Always
-        resources: 
-          requests: 
-            cpu: "2.8"
-          limits: 
-            cpu: "3.0"
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "1.8"
+            memory: "2Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
         command: ["/bin/sh"]
-        args: ["-c", "taskset -c 0-4 ./run -a run -S parsec -p dedup -i native -n 5"]
+        args: ["-c", "taskset -c 0-1 ./run -a run -S parsec -p dedup -i native -n 2"]
       restartPolicy: Never
       nodeSelector:
         cca-project-nodetype: "node-c-8core"

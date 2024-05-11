@@ -22,10 +22,10 @@ OUTPUT_FILE="memcached_results.txt"
 # Run command on CLIENT_AGENT VM
 echo "Launching mcperf client load agent on $AGENT_VM_A..."
 gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@$AGENT_VM_A --zone europe-west3-a --command "$CLIENT_AGENT_A_COMMANDS"
-sleep 30
+sleep 10
 echo "Launching mcperf client load agent on $AGENT_VM_B..."
 gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@$AGENT_VM_B --zone europe-west3-a --command "$CLIENT_AGENT_B_COMMANDS"
-sleep 30
+sleep 10
 
 CLIENT_MEASURE_COMMANDS="
   touch ~/memcache-perf-dynamic/$OUTPUT_FILE
@@ -35,21 +35,16 @@ CLIENT_MEASURE_COMMANDS="
 
 # Run commands on CLIENT_MEASURE VM
 echo "Running benchmarks on $CLIENT_MEASURE..."
-gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$CLIENT_MEASURE" --zone europe-west3-a --command "$CLIENT_MEASURE_COMMANDS"
+gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$CLIENT_MEASURE" --zone europe-west3-a --command "$CLIENT_MEASURE_COMMANDS" &
+# Make sure memcached is running
+sleep 10
 echo "Benchmark complete."
 
-# Make sure memcached is running
-sleep 30
 
 # Run the PARSEC jobs script
 echo "Running the PARSEC jobs script..."
-./run_parsec.sh
+./run_parsec_gm.sh
 
 echo "Downloading results from $CLIENT_MEASURE..."
 gcloud compute scp ubuntu@"$CLIENT_MEASURE":~/$OUTPUT_FILE ./results/ --zone europe-west3-a --ssh-key-file ~/.ssh/cloud-computing
 echo "Results downloaded."
-
-echo "Getting the execution time of each batch job..."
-kubectl get pods -o json > results.json
-echo "validating the results..."
-python3 get_time.py results.json
