@@ -43,7 +43,7 @@ echo "Benchmark complete."
 
 # Run the PARSEC jobs script
 echo "Running the PARSEC jobs script..."
-./run_parsec_gm.sh
+./run_parsec_revised.sh
 
 echo "Downloading results from $CLIENT_MEASURE..."
 gcloud compute scp ubuntu@"$CLIENT_MEASURE":~/$OUTPUT_FILE ./results/ --zone europe-west3-a --ssh-key-file ~/.ssh/cloud-computing

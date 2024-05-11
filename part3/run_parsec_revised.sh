@@ -53,6 +53,8 @@ sequential_run_jobs "parsec-radix" radix_dependent_jobs[@] &
 
 for PARSEC_JOB in "${PARSEC_JOBS[@]}"; do
     check_job_completion $PARSEC_JOB
+    echo "Getting logs for job $PARSEC_JOB"
+    (kubectl logs $(kubectl get pods --selector=job-name=$PARSEC_JOB --output=jsonpath='{.items[*].metadata.name}')) > results/${PARSEC_JOB}.txt
 done
 
 echo "All jobs are finished."
