@@ -16,7 +16,7 @@ spec:
             cpu: "1.6"
             memory: "6Gi"
           limits:
-            cpu: "2"
+            cpu: "4"
             memory: "8Gi"
         command: ["/bin/sh"]
         args: ["-c", "./run -a run -S parsec -p canneal -i native -n 4"]
