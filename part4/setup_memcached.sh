@@ -42,3 +42,4 @@ echo "Setting up mcperf on $CLIENT_VM..."
 gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$CLIENT_VM" --zone europe-west3-a --command "$MCPERF_SETUP"
 
 echo "Setup complete."
+printf "Note, to bind memcached to specific CPUs, use:\n\t$ taskset -p 0-1 \$(pgrep memcached)"
