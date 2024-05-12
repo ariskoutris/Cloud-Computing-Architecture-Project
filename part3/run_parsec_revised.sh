@@ -6,7 +6,7 @@ PARSEC_JOBS=("parsec-blackscholes" "parsec-canneal" "parsec-dedup" "parsec-ferre
 check_job_completion() {
     local job_name=$1
     while true; do
-        JOB_CONDITION=$(kubectl get jobs $job_name -o jsonpath='{.status.conditions[0].type}')
+        JOB_CONDITION=$(kubectl get jobs "$job_name" -o jsonpath='{.status.conditions[0].type}')
         if [ "$JOB_CONDITION" == "Complete" ]; then
             echo "$job_name is complete."
             break
@@ -19,18 +19,18 @@ check_job_completion() {
 start_job() {
     local job_config=$1
     echo "Starting job $job_config..."
-    kubectl create -f parsec-benchmarks/$job_config.yaml
+    kubectl create -f parsec-benchmarks/"$job_config".yaml
 }
 # Runs first job and once complete starts the next jobs in parallel
 sequential_run_jobs() {
     local job_name=$1
     local dependent_jobs=("${!2}")
 
-    start_job $job_name
-    check_job_completion $job_name
+    start_job "$job_name"
+    check_job_completion "$job_name"
 
     for job in "${dependent_jobs[@]}"; do
-        start_job $job
+        start_job "$job"
     done
 }
 
@@ -52,9 +52,9 @@ sequential_run_jobs "parsec-radix" radix_dependent_jobs[@] &
 
 
 for PARSEC_JOB in "${PARSEC_JOBS[@]}"; do
-    check_job_completion $PARSEC_JOB
+    check_job_completion "$PARSEC_JOB"
     echo "Getting logs for job $PARSEC_JOB"
-    (kubectl logs $(kubectl get pods --selector=job-name=$PARSEC_JOB --output=jsonpath='{.items[*].metadata.name}')) > results/${PARSEC_JOB}.txt
+    (kubectl logs "$(kubectl get pods --selector=job-name="$PARSEC_JOB" --output=jsonpath='{.items[*].metadata.name}')") > results/"$PARSEC_JOB".txt
 done
 
 echo "All jobs are finished."

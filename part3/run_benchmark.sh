@@ -5,9 +5,9 @@ INTERNAL_AGENT_A_IP=$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $
 INTERNAL_AGENT_B_IP=$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $6}')
 
 # VM Names
-AGENT_VM_A=("$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $1}')")
-AGENT_VM_B=("$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $1}')")
-CLIENT_MEASURE=("$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')")
+AGENT_VM_A="$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $1}')"
+AGENT_VM_B="$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $1}')"
+CLIENT_MEASURE="$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')"
 
 # Commands to run on CLIENT_AGENT VM
 # Note: Use nohup to run the command in the background and redirect the output to /dev/null
@@ -21,10 +21,10 @@ OUTPUT_FILE="memcached_results.txt"
 
 # Run command on CLIENT_AGENT VM
 echo "Launching mcperf client load agent on $AGENT_VM_A..."
-gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@$AGENT_VM_A --zone europe-west3-a --command "$CLIENT_AGENT_A_COMMANDS"
+gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$AGENT_VM_A" --zone europe-west3-a --command "$CLIENT_AGENT_A_COMMANDS"
 sleep 10
 echo "Launching mcperf client load agent on $AGENT_VM_B..."
-gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@$AGENT_VM_B --zone europe-west3-a --command "$CLIENT_AGENT_B_COMMANDS"
+gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$AGENT_VM_B" --zone europe-west3-a --command "$CLIENT_AGENT_B_COMMANDS"
 sleep 10
 
 CLIENT_MEASURE_COMMANDS="
