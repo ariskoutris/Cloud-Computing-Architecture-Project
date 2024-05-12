@@ -17,9 +17,9 @@ echo "Confirming that the memcached service is running..."
 kubectl get pods -o wide
 
 # VM Names
-AGENT_VM_A=("$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $1}')")
-AGENT_VM_B=("$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $1}')")
-CLIENT_VM=("$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')")
+AGENT_VM_A="$(kubectl get nodes -o wide | awk '/client-agent-a/ {print $1}')"
+AGENT_VM_B="$(kubectl get nodes -o wide | awk '/client-agent-b/ {print $1}')"
+CLIENT_VM="$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')"
 
 # Commands to run on each VM
 SSH_COMMANDS="

@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # VM Names
-SERVER_VM=("$(kubectl get nodes -o wide | awk '/memcache-server/ {print $1}')")
-AGENT_VM=("$(kubectl get nodes -o wide | awk '/client-agent/ {print $1}')")
-CLIENT_VM=("$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')")
+SERVER_VM="$(kubectl get nodes -o wide | awk '/memcache-server/ {print $1}')"
+AGENT_VM="$(kubectl get nodes -o wide | awk '/client-agent/ {print $1}')"
+CLIENT_VM="$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')"
 
 # Server Configuration
 CONFIG_FILE="/etc/memcached.conf"
 SERVER_MEMORY=1024
 SERVER_THREADS=16
-SERVER_IP=("$(kubectl get nodes -o wide | awk '/memcache-server/ {print $6}')")
+SERVER_IP="$(kubectl get nodes -o wide | awk '/memcache-server/ {print $6}')"
 SERVER_SETUP="
     sudo apt-get update
     sudo apt-get purge -y memcached libmemcached-tools && sudo apt-get install -y memcached libmemcached-tools
