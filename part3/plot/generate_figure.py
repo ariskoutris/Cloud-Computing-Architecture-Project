@@ -10,9 +10,9 @@ import matplotlib.patches as mpatches
 
 sns.set_theme()
 
-benchmarks = ['blackscholes', 'ferret', 'canneal','freqmine', 'radix', 'vips', 'dedup' ]
-benchmarks_labels = ['blackscholes-client a', 'ferret-client b', 'canneal-client c', 'freqmine-client c', 'radix-client b', 'vips-client b', 'dedup-client c' ]
-colors = ['#CCA000', '#0CCA00', '#CC0A00', '#CCACCA', '#00CCA0', '#CCCCAA', '#AACCCA']
+benchmarks = ['dedup', 'vips', 'radix','freqmine', 'canneal', 'ferret', 'blackscholes' ]
+benchmarks_labels = ['dedup-client c', 'vips-client c', 'radix-client c','freqmine-client c', 'canneal-client b', 'ferret-client b', 'blackscholes-client a' ]
+colors = ['#CCACCA', '#CC0A00', '#00CCA0', '#0CCA00', '#CCCCAA', '#AACCCA', '#CCA000']
 runtimes_start = {name: [] for name in benchmarks}
 runtimes_end = {name: [] for name in benchmarks}
 
@@ -111,6 +111,7 @@ def create_figures():
         plt_jobs.set_yticks(range(7))
         plt_jobs.set_yticklabels(benchmarks_labels)
         plt_jobs.set_ylim([-1, 7])
+        plt_jobs.set_xlabel("Time [s]")
         plt_jobs.set_xlim([0, length])
         plt_jobs.set_xticks(range(0, length + 1, 50))
         plt_jobs.grid(True)
@@ -192,44 +193,45 @@ def create_unified_figure():
         plt.xticks(range(0, length, 50))
         plt.grid(True)
         plt.ylabel("95th Percentile Latency [ms]")
-        plt.tick_params(axis='y', labelcolor='tab:black')
+        plt.tick_params(axis='y', labelcolor='tab:blue')
         plt.ylim([0, 1.0])
         plt.yticks(np.arange(0, 1.0, 0.1))
         start = get_memcached_start(result_mem["ts_start"],start_sec)
         width = get_memcached_width(result_mem["ts_start"],result_mem["ts_end"])
-        plt.bar(start, result_mem["p95"], align='center', width=width)
+        plt.bar(start, result_mem["p95"], align='center', width=width, color = 'dimgrey')
 
 
-        plt.hlines(y=0.1, xmin=runtimes_start['blackscholes'][i], xmax=runtimes_end['blackscholes'][i], color=colors[0], linewidth=3)
-        plt.plot(runtimes_start['blackscholes'][i],0.1,'.', color=colors[0]) 
-        plt.plot(runtimes_end['blackscholes'][i],0.1,'x', color=colors[0])
+        plt.hlines(y=0.6, xmin=runtimes_start['blackscholes'][i], xmax=runtimes_end['blackscholes'][i], color=colors[6], linewidth=3)
+        plt.plot(runtimes_start['blackscholes'][i],0.6,'.', color=colors[6]) 
+        plt.plot(runtimes_end['blackscholes'][i],0.6,'x', color=colors[6])
         
-        plt.hlines(y=0.2, xmin=runtimes_start['freqmine'][i], xmax=runtimes_end['freqmine'][i], color=colors[1], linewidth=3)
-        plt.plot(runtimes_start['freqmine'][i],0.2,'.', color=colors[1]) 
-        plt.plot(runtimes_end['freqmine'][i],0.2,'x', color=colors[1])
-        plt.hlines(y=0.2, xmin=runtimes_start['canneal'][i], xmax=runtimes_end['canneal'][i], color=colors[5], linewidth=3)
-        plt.plot(runtimes_start['canneal'][i],0.2,'.', color=colors[5]) 
-        plt.plot(runtimes_end['canneal'][i],0.2,'x', color=colors[5])
-        plt.hlines(y=0.2, xmin=runtimes_start['dedup'][i], xmax=runtimes_end['dedup'][i], color=colors[3], linewidth=3)
-        plt.plot(runtimes_start['dedup'][i],0.2,'.', color=colors[3]) 
-        plt.plot(runtimes_end['dedup'][i],0.2,'x', color=colors[3])
+        plt.hlines(y=0.3, xmin=runtimes_start['freqmine'][i], xmax=runtimes_end['freqmine'][i], color=colors[3], linewidth=3)
+        plt.plot(runtimes_start['freqmine'][i],0.3,'.', color=colors[3]) 
+        plt.plot(runtimes_end['freqmine'][i],0.3,'x', color=colors[3])
+        plt.hlines(y=0.4, xmin=runtimes_start['canneal'][i], xmax=runtimes_end['canneal'][i], color=colors[4], linewidth=3)
+        plt.plot(runtimes_start['canneal'][i],0.4,'.', color=colors[4]) 
+        plt.plot(runtimes_end['canneal'][i],0.4,'x', color=colors[4])
+        plt.hlines(y=0.1, xmin=runtimes_start['dedup'][i], xmax=runtimes_end['dedup'][i], color=colors[0], linewidth=3)
+        plt.plot(runtimes_start['dedup'][i],0.1,'.', color=colors[0]) 
+        plt.plot(runtimes_end['dedup'][i],0.1,'x', color=colors[0])
 
-        plt.hlines(y=0.3, xmin=runtimes_start['vips'][i], xmax=runtimes_end['vips'][i], color=colors[2], linewidth=3)
-        plt.plot(runtimes_start['vips'][i],0.3,'.', color=colors[2]) 
-        plt.plot(runtimes_end['vips'][i],0.3,'x', color=colors[2])
-        plt.hlines(y=0.3, xmin=runtimes_start['ferret'][i], xmax=runtimes_end['ferret'][i], color=colors[6], linewidth=3)
-        plt.plot(runtimes_start['ferret'][i],0.3,'.', color=colors[6]) 
-        plt.plot(runtimes_end['ferret'][i],0.3,'x', color=colors[6])
+        plt.hlines(y=0.2, xmin=runtimes_start['vips'][i], xmax=runtimes_end['vips'][i], color=colors[1], linewidth=3)
+        plt.plot(runtimes_start['vips'][i],0.2,'.', color=colors[1]) 
+        plt.plot(runtimes_end['vips'][i],0.2,'x', color=colors[1])
+        plt.hlines(y=0.2, xmin=runtimes_start['radix'][i], xmax=runtimes_end['radix'][i], color=colors[2], linewidth=3)
+        plt.plot(runtimes_start['radix'][i],0.2,'.', color=colors[2]) 
+        plt.plot(runtimes_end['radix'][i],0.2,'x', color=colors[2])
 
-        plt.hlines(y=0.4, xmin=runtimes_start['radix'][i], xmax=runtimes_end['radix'][i], color=colors[4], linewidth=3)
-        plt.plot(runtimes_start['radix'][i],0.4,'.', color=colors[4]) 
-        plt.plot(runtimes_end['radix'][i],0.4,'x', color=colors[4])
+        plt.hlines(y=0.5, xmin=runtimes_start['ferret'][i], xmax=runtimes_end['ferret'][i], color=colors[5], linewidth=3)
+        plt.plot(runtimes_start['ferret'][i],0.5,'.', color=colors[5]) 
+        plt.plot(runtimes_end['ferret'][i],0.5,'x', color=colors[5])
+        
 
         legends_handles = []
         for k, name in enumerate(benchmarks_labels):
             patch = mpatches.Patch(color=colors[k], label=name)
             legends_handles.append(patch)
-        plt.legend(handles=legends_handles)
+        plt.legend(handles=legends_handles, loc = 'upper right')
 
         fig.tight_layout()
         #plt.show()
@@ -243,4 +245,4 @@ def create_unified_figure():
     
 if __name__ == "__main__":
     create_figures()
-    #create_unified_figure()
+    create_unified_figure()
