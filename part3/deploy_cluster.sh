@@ -18,9 +18,10 @@ fi
 # Validate the cluster
 # This command will retry for up to 10 minutes to validate the cluster
 echo "Validating the cluster, this might take up to 10 minutes..."
+kops validate cluster --wait 10m
 
 # Check the exit status of the kops validate cluster command
-if [ "$(kops validate cluster --wait 10m)" -eq 0 ]; then
+if [ $1 -eq 0 ]; then
     echo "Cluster validation successful. Retrieving node information..."
     kubectl get nodes -o wide
 else

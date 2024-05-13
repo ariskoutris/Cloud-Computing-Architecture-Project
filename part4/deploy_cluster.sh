@@ -15,15 +15,7 @@ if [ "$(kops update cluster --name $CLUSTER_NAME --yes --admin)" -ne 0 ]; then
     exit 1
 fi
 
-# Validate the cluster
-# This command will retry for up to 10 minutes to validate the cluster
 echo "Validating the cluster, this might take up to 10 minutes..."
+kops validate cluster --wait 10m
+kubectl get nodes -o wide
 
-# Check the exit status of the kops validate cluster command
-if [ "$(kops validate cluster --wait 10m)" -eq 0 ]; then
-    echo "Cluster validation successful. Retrieving node information..."
-    kubectl get nodes -o wide
-else
-    echo "Cluster validation failed. Please check the cluster status and try again."
-    exit 1
-fi
