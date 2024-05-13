@@ -2,7 +2,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
-import itertools
+import pytz
 from datetime import datetime
 from dateutil import parser
 import json
@@ -10,8 +10,8 @@ import matplotlib.patches as mpatches
 
 sns.set_theme()
 
-benchmarks = ['blackscholes', 'freqmine', 'vips', 'dedup', 'radix', 'canneal', 'ferret']
-benchmarks_labels = ['blackscholes-client a', 'freqmine-client c', 'vips-client b', 'dedup-client c', 'radix-client b', 'canneal-client c', 'ferret-client b']
+benchmarks = ['blackscholes', 'ferret', 'canneal','freqmine', 'radix', 'vips', 'dedup' ]
+benchmarks_labels = ['blackscholes-client a', 'ferret-client b', 'canneal-client c', 'freqmine-client c', 'radix-client b', 'vips-client b', 'dedup-client c' ]
 colors = ['#CCA000', '#0CCA00', '#CC0A00', '#CCACCA', '#00CCA0', '#CCCCAA', '#AACCCA']
 runtimes_start = {name: [] for name in benchmarks}
 runtimes_end = {name: [] for name in benchmarks}
@@ -30,8 +30,8 @@ def get_memcached_start(unix_timestamps, init):
     for unix_timestamp in unix_timestamps:
         unix_timestamp /=1000
         ts = int(unix_timestamp)
-        start = datetime.fromtimestamp(ts)
-        start_time = start.minute * 60 + start.second - init
+        start = datetime.fromtimestamp(ts, tz= pytz.UTC)
+        start_time = start.hour*3600 + start.minute * 60 + start.second - init
         start_times.append(start_time)
     return start_times
 
@@ -41,13 +41,13 @@ def get_memcached_width(unix_timestamp_starts, unix_timestamp_ends):
     for unix_timestamp_start, unix_timestamp_end in zip(unix_timestamp_starts, unix_timestamp_ends):
         unix_timestamp_start /=1000
         ts = int(unix_timestamp_start)
-        start = datetime.fromtimestamp(ts)
-        start_time = start.minute * 60 + start.second
+        start = datetime.fromtimestamp(ts, tz= pytz.UTC)
+        start_time = start.hour*3600 + start.minute * 60 + start.second
 
         unix_timestamp_end /=1000
         ts2 = int(unix_timestamp_end)
-        end = datetime.fromtimestamp(ts2)
-        end_time = end.minute * 60 + end.second
+        end = datetime.fromtimestamp(ts2, tz= pytz.UTC)
+        end_time = end.hour*3600 + end.minute * 60 + end.second
 
         width = end_time - start_time
         if (width < 0):
@@ -57,7 +57,7 @@ def get_memcached_width(unix_timestamp_starts, unix_timestamp_ends):
 
 def transform_date_string(str):
     time = datetime.strptime(str,"%Y-%m-%dT%H:%M:%SZ")
-    sec= time.minute*60 + time.second
+    sec= time.hour*3600 + time.minute*60 + time.second
     return sec
 
 def create_figures():
@@ -136,7 +136,7 @@ def create_figures():
         plt.subplots_adjust(hspace=0.2, bottom=0.2)
         fig.tight_layout()
         #plt.show()
-        fig.savefig(f'part3/figure_3_run{i}.png')
+        fig.savefig(f'part3/plot/figure_3_run{i}.png')
 
 
 def create_unified_figure():
@@ -192,7 +192,7 @@ def create_unified_figure():
         plt.xticks(range(0, length, 50))
         plt.grid(True)
         plt.ylabel("95th Percentile Latency [ms]")
-        plt.tick_params(axis='y', labelcolor='tab:blue')
+        plt.tick_params(axis='y', labelcolor='tab:black')
         plt.ylim([0, 1.0])
         plt.yticks(np.arange(0, 1.0, 0.1))
         start = get_memcached_start(result_mem["ts_start"],start_sec)
@@ -233,7 +233,7 @@ def create_unified_figure():
 
         fig.tight_layout()
         #plt.show()
-        fig.savefig(f'part3/figure_3_unified_run{i}.png')
+        fig.savefig(f'part3/plot/figure_3_unified_run{i}.png')
 
 
 
@@ -243,4 +243,4 @@ def create_unified_figure():
     
 if __name__ == "__main__":
     create_figures()
-    create_unified_figure()
+    #create_unified_figure()
