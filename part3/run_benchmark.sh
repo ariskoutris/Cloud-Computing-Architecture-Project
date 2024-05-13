@@ -11,13 +11,13 @@ CLIENT_MEASURE="$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')
 
 # Commands to run on CLIENT_AGENT VM
 # Note: Use nohup to run the command in the background and redirect the output to /dev/null
-CLIENT_AGENT_A_COMMANDS="pkill mcperf && ./memcache-perf-dynamic/mcperf -T 2 -A >> /dev/null"
-CLIENT_AGENT_B_COMMANDS="pkill mcperf && ./memcache-perf-dynamic/mcperf -T 4 -A >> /dev/null"
+CLIENT_AGENT_A_COMMANDS="pkill mcperf && nohup ./memcache-perf-dynamic/mcperf -T 2 -A > /dev/null 2>&1 & echo \$! > mcperf.pid"
+CLIENT_AGENT_B_COMMANDS="pkill mcperf && nohup ./memcache-perf-dynamic/mcperf -T 4 -A > /dev/null 2>&1 & echo \$! > mcperf.pid"
 
 # Extract MEMCACHED_IP
 MEMCACHED_IP=$(kubectl get pods -o wide | awk '/some-memcached/ {print $6}')
 
-OUTPUT_FILE="memcached_results_1.txt"
+OUTPUT_FILE="memcached_results.txt"
 
 # Run command on CLIENT_AGENT VM
 echo "Launching mcperf client load agent on $AGENT_VM_A..."
