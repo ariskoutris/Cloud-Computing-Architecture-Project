@@ -20,6 +20,12 @@ SERVER_SETUP="
     sudo systemctl restart memcached
     sleep 1
     sudo systemctl status memcached
+    docker pull anakli/cca:parsec_blackscholes
+    docker pull anakli/cca:parsec_canneal
+    docker pull anakli/cca:parsec_dedup
+    docker pull anakli/cca:parsec_ferret
+    docker pull anakli/cca:parsec_freqmine
+    docker pull anakli/cca:splash2x_radix
 "
 # VM setup
 MCPERF_SETUP="
@@ -36,10 +42,13 @@ echo "Setting up memcached server on $SERVER_VM..."
 gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$SERVER_VM" --zone europe-west3-a --command "$SERVER_SETUP"
 echo "Please make sure that the server is running here, or cancel the script if it is not."
 sleep 5
+echo "Sending scheduler scheduler to $SERVER_VM..."
+gcloud compute scp -r --ssh-key-file ~/.ssh/cloud-computing scheduler ubuntu@"$SERVER_VM":~/ --zone europe-west3-a
 echo "Setting up mcperf on $AGENT_VM..."
 gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$AGENT_VM" --zone europe-west3-a --command "$MCPERF_SETUP"
 echo "Setting up mcperf on $CLIENT_VM..."
 gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$CLIENT_VM" --zone europe-west3-a --command "$MCPERF_SETUP"
 
+
 echo "Setup complete."
-printf "Note, to bind memcached to specific CPUs, use:\n\t$ taskset -p 0-1 \$(pgrep memcached)"
+
