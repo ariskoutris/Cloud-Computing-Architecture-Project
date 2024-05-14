@@ -11,7 +11,7 @@ import matplotlib.patches as mpatches
 sns.set_theme()
 
 benchmarks = ['dedup', 'vips', 'radix','freqmine', 'canneal', 'ferret', 'blackscholes' ]
-benchmarks_labels = ['dedup-client c', 'vips-client c', 'radix-client c','freqmine-client c', 'canneal-client b', 'ferret-client b', 'blackscholes-client a' ]
+benchmarks_labels = ['dedup node-c', 'vips node-c', 'radix node-c','freqmine node-c', 'canneal node-b', 'ferret node-b', 'blackscholes node-a']
 colors = ['#CCACCA', '#CC0A00', '#00CCA0', '#0CCA00', '#CCCCAA', '#AACCCA', '#CCA000']
 runtimes_start = {name: [] for name in benchmarks}
 runtimes_end = {name: [] for name in benchmarks}
