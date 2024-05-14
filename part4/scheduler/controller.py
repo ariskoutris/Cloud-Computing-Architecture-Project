@@ -36,8 +36,15 @@ class Controller:
     def run_scheduler(self) -> None:
         # TODO: Schedule the job execution here
         # Note, use get_system_cpu_usage() function in `utils` to track CPU percentages per core.
+        # Don't change this line. The first value will be 0 so it needs to be ignored.
+        get_system_cpu_usage()
+        memcached_proc = psutil.Process(self._memcached_pid)
         while True:
-            sleep(2)
+            mc_cpu_usage = memcached_proc.cpu_percent()
+            total_cpu_usage = get_system_cpu_usage()
+            print(f"Memcached CPU usage: {mc_cpu_usage}%")
+            print(f"Total CPU usage: {total_cpu_usage}%")
+            sleep(0.25)
             break
         if not self._end():
             raise Exception("Error when shutting down scheduler.")
@@ -65,11 +72,12 @@ class Controller:
         container = self.docker_client.containers.run(
             image=JobToImage[job],
             command=f"./run -a run -S {job_type} -p {job.value} -i native -n {str(initial_threads)}",
-            cpuset_cpus=initial_cores,
+            cpuset_cpus=",".join(initial_cores),
             name=job.value,
-            remove=True,
+            remove=False,
             detach=True,
         )
+        container.reload()
         self._containers[job] = container
         return True
 
@@ -78,8 +86,9 @@ class Controller:
         if self._containers.get(job) is None:
             print(f"No associated container found with job {job.value}.")
             return False
-        if self._containers.get(job).status == "running":
-            print(f"Container for job {job.value} is still running.")
+        self._containers.get(job).reload()
+        if self._containers.get(job).status != "exited":
+            print(f"Container for job {job.value} is still `{self._containers.get(job).status}`.")
             return False
         self.logger.job_end(job=job)
         print(f"Removing container for job: {job.value}...")
@@ -94,6 +103,7 @@ class Controller:
             return False
         self.logger.update_cores(job=job, cores=cores)
         self._containers.get(job).update(cpuset_cpus=cores)
+        self._containers.get(job).reload()
         return True
 
     def _job_pause(self, job: Job) -> bool:
@@ -104,6 +114,7 @@ class Controller:
 
         self.logger.job_pause(job=job)
         self._containers.get(job).pause()
+        self._containers.get(job).reload()
         return True
 
     def _job_unpause(self, job: Job) -> bool:
@@ -113,6 +124,7 @@ class Controller:
             return False
         self.logger.job_pause(job=job)
         self._containers.get(job).unpause()
+        self._containers.get(job).reload()
         return True
 
     def _custom_event(self, job: Job, comment: str):
@@ -123,6 +135,7 @@ class Controller:
     def _end(self) -> bool:
         for job in self._containers.keys():
             container = self._containers.get(job)
+            self._containers.get(job).reload()
             if container.status != "exited":
                 container.remove()
             self._containers.pop(job)

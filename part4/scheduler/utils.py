@@ -26,7 +26,7 @@ JobToImage = {
 }
 
 
-def get_system_cpu_usage(interval=1, percpu=True) -> Union[List[float], float]:
+def get_system_cpu_usage(interval=None, percpu=True) -> Union[List[float], float]:
     """
     Gets system CPU usage per available core (0 - 100%).
     For details, check documentation: https://psutil.readthedocs.io/en/latest/#psutil.cpu_percent
