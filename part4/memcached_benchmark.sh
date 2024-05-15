@@ -1,0 +1,7 @@
+#!/bin/bash
+
+SERVER_THREADS=1
+SERVER_CORES=1
+
+./setup_memcached_1.sh $SERVER_THREADS $SERVER_CORES
+./run_mcperf.sh $SERVER_THREADS $SERVER_CORES
