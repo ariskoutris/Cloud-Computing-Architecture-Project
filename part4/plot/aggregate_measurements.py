@@ -22,23 +22,26 @@ def get_memcached_start(unix_timestamps, init):
 
 def aggregate():
 
-    mem_file_path = f'part3/plot/memcached_results_run.txt'
-    cpu_file_path = f'part3/plot/results_run_.txt'
+    mem_file_path = f'part4/results/memcached_results_T2_C2.txt'
+    cpu_file_path = f'part4/results/cpu_util_T2_C2.csv'
     result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
-    cpu_file = pd.read_csv(cpu_file_path, delim_whitespace=True)
+    cpu_file = pd.read_csv(cpu_file_path)
+    result_mem['ts_start']= result_mem['ts_start']/1000
+    result_mem['ts_end']= result_mem['ts_end']/1000
+
     cpu_util = []
     for index, row in result_mem.iterrows():
         start = row['ts_start']
-        end = row['ts_start']
+        end = row['ts_end']
         cpu = 0
         count = 0
         for index2, row2 in cpu_file.iterrows():
-            if (row2['timestamp'] > start & row2['timestamp'] <= end):
+            if (row2['timestamp'] >= start and row2['timestamp'] <= end):
                 cpu += row2['cpu']
                 count += 1
         final_val = cpu / count
         cpu_util.append(final_val)
-    result_mem.assign(cpu_utilization=cpu_util)
+    result_mem.insert(20, "cpu", cpu_util, True)
     result_mem.to_csv(mem_file_path, sep='\t')
         
 
@@ -46,4 +49,4 @@ def aggregate():
 
   
 if __name__ == "__main__":
-    create_figures()
+    aggregate()

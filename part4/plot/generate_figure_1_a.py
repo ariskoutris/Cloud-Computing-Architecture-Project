@@ -1,6 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 
 sns.set_theme()
 
@@ -13,7 +14,7 @@ def aggregate_metrics(df):
     errs = df.groupby('target').agg({'QPS': 'std', 'p95': 'std'}).loc[means.index]
     return means, errs
 
-def create_figure(df_list, xlim=(0,125000), ylim=(0,10), use_error_bars=True):
+def create_figure(df_list, xlim=(0,125000), ylim=(0,2.2), use_error_bars=True):
     fig = plt.figure(figsize=(8, 6))
     marker_styles = ['o', 's', 'D', '^', '<', '>', '*']
     line_styles = ['-', '--', '-.', ':']
@@ -29,14 +30,15 @@ def create_figure(df_list, xlim=(0,125000), ylim=(0,10), use_error_bars=True):
             plt.plot(means['QPS'], means['p95']/1000, line_style+marker, markersize=5, linewidth=2,
                      alpha=0.8, label=label_map[configuration])
     
-    plt.xlabel('achieved QPS', fontsize=15)
+    plt.xlabel('Achieved QPS', fontsize=15)
     plt.ylabel('$95^{th}$ Percentile Latency (ms)', fontsize=15)
-    plt.title('memcached Performance (3 Run Average)', fontsize=16)
+    plt.title('memcached performance (3 run average)', fontsize=16)
     plt.legend(fontsize=13)
     plt.xticks(range(0, 125001, 15000),
                           labels=(f'{i}k' for i in range(0, 125, 15)))
     plt.xticks(fontsize=13)
     plt.yticks(fontsize=13)
+    plt.yticks(np.arange(0, 2.4, 0.2))
     
     plt.xlim(*xlim)
     plt.ylim(*ylim)
@@ -47,9 +49,9 @@ def create_figure(df_list, xlim=(0,125000), ylim=(0,10), use_error_bars=True):
 if __name__ == "__main__":
     result_dfs = {}
     for id, configuration in enumerate(file_map):
-        file_path = f'results/memached_results_{configuration}.csv'
+        file_path = f'part4/plot/results_4_1a/memcached_results_{configuration}.txt'
         conf = configurations[id]
         result_dfs[conf] = pd.read_csv(file_path)
         
     fig = create_figure(result_dfs)
-    fig.savefig('figure_4_1a.png', dpi=300)
+    fig.savefig(f'part4/plot/figure_4_1a.png', dpi=300)
