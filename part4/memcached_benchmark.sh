@@ -1,7 +1,21 @@
 #!/bin/bash
 
-SERVER_THREADS=1
-SERVER_CORES=1
+./setup_memcached_1.sh
+./run_mcperf.sh 1 1
+./run_mcperf.sh 1 1
+./run_mcperf.sh 1 1
 
-./setup_memcached_1.sh $SERVER_THREADS $SERVER_CORES
-./run_mcperf.sh $SERVER_THREADS $SERVER_CORES
+./setup_memcached_1.sh
+./run_mcperf.sh 1 2
+./run_mcperf.sh 1 2
+./run_mcperf.sh 1 2
+
+./setup_memcached_1.sh
+./run_mcperf.sh 2 1
+./run_mcperf.sh 2 1
+./run_mcperf.sh 2 1
+
+./setup_memcached_1.sh
+./run_mcperf.sh 2 2
+./run_mcperf.sh 2 2
+./run_mcperf.sh 2 2
