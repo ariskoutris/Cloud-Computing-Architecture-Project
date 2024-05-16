@@ -18,6 +18,7 @@ class Controller:
         self.logger = SchedulerLogger()
         self._containers = {}
         self._memcached_pid = None
+        self._memcached_num_cores = init_memcached_cores
         for proc in psutil.process_iter():
             if proc.name() == "memcached":
                 self._memcached_pid = proc.pid
@@ -32,22 +33,78 @@ class Controller:
         self.logger.job_start(
             Job.MEMCACHED, init_memcached_cores, init_memcached_threads
         )
+        
+    def _remove_job_containers(self) -> bool:
+        for job, container in list(self._containers.items()):  # Use list to create a static list of items
+            if container.status != "exited":
+                container.stop()  # Stop the container if it is running
+                container.wait()  # Wait until the container is completely stopped
+            container.remove()  # Remove the container
+            self._containers.pop(job)  # Remove the container from the dictionary
+        return True
 
+            
     def run_scheduler(self) -> None:
         # TODO: Schedule the job execution here
         # Note, use get_system_cpu_usage() function in `utils` to track CPU percentages per core.
         # Don't change this line. The first value will be 0 so it needs to be ignored.
+        self._remove_job_containers()
         get_system_cpu_usage()
         memcached_proc = psutil.Process(self._memcached_pid)
+        memcached_cores_prev = self._memcached_num_cores
+        
+        job_threads = {Job.BLACKSCHOLES: 2, Job.DEDUP: 1, Job.VIPS: 1, Job.RADIX: 2, Job.CANNEAL: 4, Job.FERRET: 2, Job.FREQMINE: 2}
+        jobsA = [Job.BLACKSCHOLES, Job.DEDUP, Job.VIPS, Job.RADIX]
+        jobsB = [Job.CANNEAL, Job.FERRET, Job.FREQMINE]
+        active_jobA_id, active_jobB_id = 0, 0
+        self._job_start(jobsA[active_jobA_id], ["1"], job_threads[jobsA[active_jobA_id]])
+        self._job_start(jobsB[active_jobB_id], ["2", "3"], job_threads[jobsB[active_jobB_id]])
+
         while True:
             mc_cpu_usage = memcached_proc.cpu_percent()
             total_cpu_usage = get_system_cpu_usage()
             print(f"Memcached CPU usage: {mc_cpu_usage}%")
             print(f"Total CPU usage: {total_cpu_usage}%")
+
+            memcached_cores = self.adjust_memcached_cores(mc_cpu_usage)
+            if memcached_cores_prev == 2 and memcached_cores == 1: 
+                self._job_unpause(jobsA[active_jobA_id])
+            if memcached_cores_prev == 1 and memcached_cores == 2:
+                self._job_pause(jobsA[active_jobA_id])  
+            memcached_cores_prev = memcached_cores 
+            
+            jobsA_done = (active_jobA_id == len(jobsA))
+            jobsB_done = (active_jobB_id == len(jobsB))
+            jobsB_cores = ["1", "2", "3"] if jobsA_done else ["2", "3"]
+            jobsA_cores = ["1", "2", "3"] if jobsB_done else ["1"]
+            if jobsA_done and jobsB_done:
+                break 
+            
+            if active_jobA_id < len(jobsA):
+                if self._job_status(jobsA[active_jobA_id]) == "exited":
+                    active_jobA_id += 1
+                    if active_jobA_id < len(jobsA):
+                        self._job_start(jobsA[active_jobA_id], jobsA_cores, job_threads[jobsA[active_jobA_id]])
+                        
+            if active_jobB_id < len(jobsB):
+                if self._job_status(jobsB[active_jobB_id]) == "exited":
+                    active_jobB_id += 1
+                    if active_jobB_id < len(jobsB):
+                        self._job_start(jobsB[active_jobB_id], jobsB_cores, job_threads[jobsB[active_jobB_id]])   
+            
+            if active_jobA_id == len(jobsA) and active_jobB_id == len(jobsB):
+                break
+            
             sleep(0.25)
-            break
+
         if not self._end():
             raise Exception("Error when shutting down scheduler.")
+
+    def adjust_memcached_cores(self, mc_cpu_usage: float) -> int:
+        if self._memcached_num_cores == 1 and mc_cpu_usage >= 34.68:
+            self._set_memcached_cores(["0", "1"])
+        if self._memcached_num_cores == 2 and mc_cpu_usage < 45:
+            self._set_memcached_cores(["0"])
 
     def _set_memcached_cores(self, cores: List[str]) -> bool:
         print(f"Setting Memcached CPUs to {cores}")
@@ -56,6 +113,7 @@ class Controller:
         subprocess.run(
             command.split(" "), stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT
         )
+        self._memcached_num_cores = len(cores)
         self.logger.update_cores(Job.MEMCACHED, cores)
         return True
 
@@ -64,9 +122,6 @@ class Controller:
     ) -> bool:
         assert job != Job.SCHEDULER, "You cannot start job scheduler!"
 
-        self.logger.job_start(
-            job=job, initial_cores=initial_cores, initial_threads=initial_threads
-        )
         print(f"Starting job {job.value}")
         job_type = 'parsec' if job != Job.RADIX else 'splash2x'
         container = self.docker_client.containers.run(
@@ -79,15 +134,22 @@ class Controller:
         )
         container.reload()
         self._containers[job] = container
+        
+        self.logger.job_start(
+            job=job, initial_cores=initial_cores, initial_threads=initial_threads
+        )
         return True
 
-    def _job_end(self, job: Job) -> bool:
-        assert job != Job.SCHEDULER, "You cannot end job scheduler!"
+    def _job_status(self, job: Job) -> str:
+        assert job != Job.SCHEDULER, "You cannot check job scheduler!"
         if self._containers.get(job) is None:
             print(f"No associated container found with job {job.value}.")
-            return False
+            return "job not found"
         self._containers.get(job).reload()
-        if self._containers.get(job).status != "exited":
+        return self._containers.get(job).status
+    
+    def _job_end(self, job: Job) -> bool:
+        if self._job_status(job) != "exited":
             print(f"Container for job {job.value} is still `{self._containers.get(job).status}`.")
             return False
         self.logger.job_end(job=job)
@@ -141,7 +203,7 @@ class Controller:
             self._containers.pop(job)
         self.logger.end()
         return True
-
+    
 
 if __name__ == "__main__":
     controller = Controller()
