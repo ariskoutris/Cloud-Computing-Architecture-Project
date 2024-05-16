@@ -4,6 +4,7 @@ from utils import *
 from typing import List, Optional
 import subprocess
 from time import sleep
+from datetime import datetime
 
 
 class Controller:
@@ -13,12 +14,12 @@ class Controller:
         init_memcached_threads: int = 2,
     ):
         if init_memcached_cores is None:
-            init_memcached_cores = ["0"]
+            init_memcached_cores = ["0", "1"]
         self.docker_client = docker.from_env()
         self.logger = SchedulerLogger()
         self._containers = {}
         self._memcached_pid = None
-        self._memcached_num_cores = init_memcached_cores
+        self._memcached_num_cores = len(init_memcached_cores)
         for proc in psutil.process_iter():
             if proc.name() == "memcached":
                 self._memcached_pid = proc.pid
@@ -51,59 +52,91 @@ class Controller:
         self._remove_job_containers()
         get_system_cpu_usage()
         memcached_proc = psutil.Process(self._memcached_pid)
+        memcached_proc.cpu_percent()
         memcached_cores_prev = self._memcached_num_cores
+        memcached_cores = self._memcached_num_cores
         
         job_threads = {Job.BLACKSCHOLES: 2, Job.DEDUP: 1, Job.VIPS: 1, Job.RADIX: 2, Job.CANNEAL: 4, Job.FERRET: 2, Job.FREQMINE: 2}
         jobsA = [Job.BLACKSCHOLES, Job.DEDUP, Job.VIPS, Job.RADIX]
         jobsB = [Job.CANNEAL, Job.FERRET, Job.FREQMINE]
         active_jobA_id, active_jobB_id = 0, 0
         self._job_start(jobsA[active_jobA_id], ["1"], job_threads[jobsA[active_jobA_id]])
+        self._job_pause(jobsA[active_jobA_id])
         self._job_start(jobsB[active_jobB_id], ["2", "3"], job_threads[jobsB[active_jobB_id]])
-
+        start=datetime.now()
+        i = 0
+        elapsed_time = 1.25
         while True:
             mc_cpu_usage = memcached_proc.cpu_percent()
             total_cpu_usage = get_system_cpu_usage()
-            print(f"Memcached CPU usage: {mc_cpu_usage}%")
-            print(f"Total CPU usage: {total_cpu_usage}%")
-
-            memcached_cores = self.adjust_memcached_cores(mc_cpu_usage)
-            if memcached_cores_prev == 2 and memcached_cores == 1: 
-                self._job_unpause(jobsA[active_jobA_id])
-            if memcached_cores_prev == 1 and memcached_cores == 2:
-                self._job_pause(jobsA[active_jobA_id])  
-            memcached_cores_prev = memcached_cores 
+            i += 1
+            if i == 10:
+                print(f"Memcached CPU usage: {mc_cpu_usage}%")
+                print(f"Memcached cores: {memcached_cores}")
+                print(f"Total CPU usage: {total_cpu_usage}%")
+                print(f"Elapsed time: {datetime.now()-start}s")
+                print(f'Remaining Jobs:\n{jobsA[active_jobA_id:]}\n{jobsB[active_jobB_id:]}')
+                i = 0
             
+            if elapsed_time > 1:
+                self._adjust_memcached_cores(mc_cpu_usage)
+                elapsed_time = 0
+                
             jobsA_done = (active_jobA_id == len(jobsA))
             jobsB_done = (active_jobB_id == len(jobsB))
             jobsB_cores = ["1", "2", "3"] if jobsA_done else ["2", "3"]
             jobsA_cores = ["1", "2", "3"] if jobsB_done else ["1"]
+            
             if jobsA_done and jobsB_done:
                 break 
+           
+            memcached_cores = self._memcached_num_cores
+            if memcached_cores_prev == 2 and memcached_cores == 1: 
+                if jobsB_done:
+                    self._update_cores(jobsA[active_jobA_id], ["1", "2", "3"])
+                    print(f"Updating cores of job {jobsA[active_jobA_id].value} to {[1, 2, 3]}...")
+                elif jobsA_done:
+                    self._update_cores(jobsB[active_jobB_id], ["1", "2", "3"])
+                    print(f"Updating cores of job {jobsB[active_jobB_id].value} to {[1, 2, 3]}...")
+                else:
+                    self._job_unpause(jobsA[active_jobA_id])
+                    print(f"Unpausing job {jobsA[active_jobA_id].value}...")
+            if memcached_cores_prev == 1 and memcached_cores == 2:
+                if jobsB_done:
+                    self._update_cores(jobsA[active_jobA_id], ["2", "3"])
+                    print(f"Updating cores of job {jobsA[active_jobA_id].value} to {[2, 3]}...")
+                elif jobsA_done:
+                    self._update_cores(jobsB[active_jobB_id], ["2", "3"])
+                    print(f"Updating cores of job {jobsB[active_jobB_id].value} to {[2, 3]}...")
+                else:
+                    self._job_pause(jobsA[active_jobA_id])  
+                    print(f"Pausing job {jobsA[active_jobA_id].value}...")
+            memcached_cores_prev = memcached_cores 
             
             if active_jobA_id < len(jobsA):
                 if self._job_status(jobsA[active_jobA_id]) == "exited":
+                    self._job_end(jobsA[active_jobA_id])
                     active_jobA_id += 1
                     if active_jobA_id < len(jobsA):
                         self._job_start(jobsA[active_jobA_id], jobsA_cores, job_threads[jobsA[active_jobA_id]])
                         
             if active_jobB_id < len(jobsB):
                 if self._job_status(jobsB[active_jobB_id]) == "exited":
+                    self._job_end(jobsB[active_jobB_id])
                     active_jobB_id += 1
                     if active_jobB_id < len(jobsB):
                         self._job_start(jobsB[active_jobB_id], jobsB_cores, job_threads[jobsB[active_jobB_id]])   
-            
-            if active_jobA_id == len(jobsA) and active_jobB_id == len(jobsB):
-                break
-            
+                        
             sleep(0.25)
+            elapsed_time += 0.25
 
         if not self._end():
             raise Exception("Error when shutting down scheduler.")
 
-    def adjust_memcached_cores(self, mc_cpu_usage: float) -> int:
+    def _adjust_memcached_cores(self, mc_cpu_usage: float) -> None:
         if self._memcached_num_cores == 1 and mc_cpu_usage >= 34.68:
             self._set_memcached_cores(["0", "1"])
-        if self._memcached_num_cores == 2 and mc_cpu_usage < 45:
+        elif self._memcached_num_cores == 2 and mc_cpu_usage < 45:
             self._set_memcached_cores(["0"])
 
     def _set_memcached_cores(self, cores: List[str]) -> bool:
@@ -164,7 +197,7 @@ class Controller:
             print(f"No associated container found with job {job.value}.")
             return False
         self.logger.update_cores(job=job, cores=cores)
-        self._containers.get(job).update(cpuset_cpus=cores)
+        self._containers.get(job).update(cpuset_cpus=",".join(cores))
         self._containers.get(job).reload()
         return True
 
@@ -200,7 +233,7 @@ class Controller:
             self._containers.get(job).reload()
             if container.status != "exited":
                 container.remove()
-            self._containers.pop(job)
+        self._containers.clear()
         self.logger.end()
         return True
     
