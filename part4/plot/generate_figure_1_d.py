@@ -26,11 +26,11 @@ def create_figure(meas, id):
     fig_cpu.set_ylabel('CPU Utilization (%)', fontsize=15)
     
     if id==0:
-        fig_95.set_ylim([0, 2.2])
-        fig_95.set_yticks(np.arange(0, 2.4, 0.2))
+        fig_95.set_ylim([0, 2.75])
+        fig_95.set_yticks(np.arange(0, 3.0, 0.25))
 
-        fig_cpu.set_ylim([0, 100])
-        fig_cpu.set_yticks(range(0, 110, 10))
+        fig_cpu.set_ylim([0, 110])
+        fig_cpu.set_yticks(range(0, 120, 10))
     else:
         fig_95.set_ylim([0, 2.0])
         fig_95.set_yticks(np.arange(0, 2.2, 0.2))
