@@ -8,7 +8,7 @@ CLIENT_VM="$(kubectl get nodes -o wide | awk '/client-measure/ {print $1}')"
 # Server Configuration
 CONFIG_FILE="/etc/memcached.conf"
 SERVER_MEMORY=1024
-SERVER_THREADS=16
+SERVER_THREADS=2
 SERVER_IP="$(kubectl get nodes -o wide | awk '/memcache-server/ {print $6}')"
 SERVER_SETUP="
     sudo apt-get update
@@ -20,13 +20,28 @@ SERVER_SETUP="
     sudo systemctl restart memcached
     sleep 1
     sudo systemctl status memcached
-    docker pull anakli/cca:parsec_blackscholes
-    docker pull anakli/cca:parsec_canneal
-    docker pull anakli/cca:parsec_dedup
-    docker pull anakli/cca:parsec_ferret
-    docker pull anakli/cca:parsec_freqmine
-    docker pull anakli/cca:splash2x_radix
 "
+
+DOCKER_SETUP="
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo docker pull anakli/cca:parsec_blackscholes
+    sudo docker pull anakli/cca:parsec_canneal
+    sudo docker pull anakli/cca:parsec_dedup
+    sudo docker pull anakli/cca:parsec_ferret
+    sudo docker pull anakli/cca:parsec_freqmine
+    sudo docker pull anakli/cca:splash2x_radix
+"
+
+PYTHON_SETUP="
+    sudo apt-get update
+    sudo apt install python3-pip --yes
+    pip3 install psutil docker
+    sudo usermod -a -G docker ubuntu
+"
+
 # VM setup
 MCPERF_SETUP="
     sudo sh -c 'echo deb-src http://europe-west3.gce.archive.ubuntu.com/ubuntu/ jammy main restricted >> /etc/apt/sources.list'
@@ -38,6 +53,10 @@ MCPERF_SETUP="
     make
 "
 
+echo "Setting up docker on $SERVER_VM..."
+gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$SERVER_VM" --zone europe-west3-a --command "$DOCKER_SETUP"
+echo "Setting up docker on $SERVER_VM..."
+gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$SERVER_VM" --zone europe-west3-a --command "$PYTHON_SETUP"
 echo "Setting up memcached server on $SERVER_VM..."
 gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$SERVER_VM" --zone europe-west3-a --command "$SERVER_SETUP"
 echo "Please make sure that the server is running here, or cancel the script if it is not."
