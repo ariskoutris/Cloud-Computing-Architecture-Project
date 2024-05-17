@@ -40,7 +40,6 @@ class Controller:
         # Note, use get_system_cpu_usage() function in `utils` to track CPU percentages per core.
         # Don't change this line. The first value will be 0 so it needs to be ignored.
         
-        #job_threads = {Job.BLACKSCHOLES: 2, Job.DEDUP: 1, Job.VIPS: 1, Job.RADIX: 4, Job.CANNEAL: 4, Job.FERRET: 2, Job.FREQMINE: 2}
         job_threads = {Job.BLACKSCHOLES: 2, Job.DEDUP: 1, Job.VIPS: 1, Job.RADIX: 2, Job.CANNEAL: 4, Job.FERRET: 2, Job.FREQMINE: 2}
         jobsA = [Job.DEDUP, Job.VIPS, Job.RADIX]
         jobsB = [Job.BLACKSCHOLES, Job.CANNEAL, Job.FERRET, Job.FREQMINE]
@@ -94,9 +93,8 @@ class Controller:
                     self._update_cores(jobsB[active_jobB_id], ["1", "2", "3"])
                     print(f"Updating cores of job {jobsB[active_jobB_id].value} to {[1, 2, 3]}...")
                 else:
-                    if self._job_status(jobsA[active_jobA_id]) == "running":
-                        self._job_unpause(jobsA[active_jobA_id])
-                        print(f"Unpausing job {jobsA[active_jobA_id].value}...")
+                    self._job_unpause(jobsA[active_jobA_id])
+                    print(f"Unpausing job {jobsA[active_jobA_id].value}...")
             if memcached_cores_prev == 1 and memcached_cores == 2:
                 if jobsB_done:
                     self._update_cores(jobsA[active_jobA_id], ["2", "3"])
@@ -105,9 +103,8 @@ class Controller:
                     self._update_cores(jobsB[active_jobB_id], ["2", "3"])
                     print(f"Updating cores of job {jobsB[active_jobB_id].value} to {[2, 3]}...")
                 else:
-                    if self._job_status(jobsA[active_jobA_id]) == "running":
-                        self._job_pause(jobsA[active_jobA_id])  
-                        print(f"Pausing job {jobsA[active_jobA_id].value}...")
+                    self._job_pause(jobsA[active_jobA_id])  
+                    print(f"Pausing job {jobsA[active_jobA_id].value}...")
             memcached_cores_prev = memcached_cores 
             
             if active_jobA_id < len(jobsA):
