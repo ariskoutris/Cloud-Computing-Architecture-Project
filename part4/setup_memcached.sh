@@ -68,7 +68,7 @@ gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$SERVER_VM" --z
 echo "Please make sure that the server is running here, or cancel the script if it is not."
 sleep 5
 echo "Sending scheduler scheduler to $SERVER_VM..."
-gcloud compute scp -r --ssh-key-file ~/.ssh/cloud-computing scheduler ubuntu@"$SERVER_VM":~/ --zone europe-west3-a
+gcloud compute scp --recurse --ssh-key-file ~/.ssh/cloud-computing scheduler ubuntu@"$SERVER_VM":~/ --zone europe-west3-a
 echo "Setting up mcperf on $AGENT_VM..."
 gcloud compute ssh --ssh-key-file ~/.ssh/cloud-computing ubuntu@"$AGENT_VM" --zone europe-west3-a --command "$MCPERF_SETUP"
 echo "Setting up mcperf on $CLIENT_VM..."
