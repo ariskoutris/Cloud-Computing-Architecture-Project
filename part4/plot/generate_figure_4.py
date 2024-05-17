@@ -50,8 +50,8 @@ def transform_date_string(str):
 def create_figures():
 
     for i in range(3):
-        mem_file_path = f'part4/plot/results_4_3/memcached_{i}.txt'
-        res_file_path = f'part4/plot/results_4_3/jobs_{i}.txt'
+        mem_file_path = f'part4/plot/results_4_4/memcached_{i}.txt'
+        res_file_path = f'part4/plot/results_4_4/jobs_{i}.txt'
         result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
         result_items = pd.read_csv(res_file_path, delim_whitespace=True)
 

@@ -43,6 +43,7 @@ def create_figure(meas, id):
     fig_95.axhline(y=1.0, color='tab:gray', linewidth=3, linestyle='dotted', label='SLO')
 
     fig_cpu.plot(meas['QPS'], meas['cpu'], alpha=0.8, label='cpu', color = 'royalblue', marker = '.')
+    fig_cpu.grid(zorder=0)
 
     lines, labels = fig_95.get_legend_handles_labels()
     lines2, labels2 = fig_cpu.get_legend_handles_labels()
