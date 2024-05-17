@@ -39,7 +39,7 @@ def calculate():
     times = {name: [] for name in benchmarks}
     scheduler_times = []
     for i in range(3):
-        jobs_path = f'part4/plot/results_4_3/jobs_{i}.txt'
+        jobs_path = f'part4/plot/results_4_4/jobs_{i}.txt'
         jobs = pd.read_csv(jobs_path, delim_whitespace=True)
 
         runtimes_start = {name: [] for name in benchmarks}
