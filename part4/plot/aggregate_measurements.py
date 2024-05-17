@@ -8,6 +8,7 @@ from dateutil import parser
 import json
 import matplotlib.patches as mpatches
 
+utc=pytz.UTC
 sns.set_theme()
 
 def get_memcached_start(unix_timestamps, init):
@@ -43,10 +44,65 @@ def aggregate():
         cpu_util.append(final_val)
     result_mem.insert(20, "cpu", cpu_util, True)
     result_mem.to_csv(mem_file_path, sep='\t')
-        
 
-        
+def aggregate_times():
+
+    mem_file_path = f'part4/results_scheduler/mcperf_1.txt'
+    result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
+    start = 1715948085155
+    end = 1715949285667
+    intervals = 120
+    counter = ((end - start)/intervals)
+    ts_start = []
+    ts_end = []
+    prev = start
+    for index, row in result_mem.iterrows():
+        ts_start.append(prev)
+        ending = prev + counter
+        ts_end.append(ending)
+        prev = ending
+
+    result_mem.insert(18, "ts_start", ts_start, True)
+    result_mem.insert(19, "ts_end", ts_end, True)
+    mem_file_path = f'part4/plot/results_4_3/memcached_1.txt'
+    result_mem.to_csv(mem_file_path, sep='\t')
+
+def transform_unix_time(unix_timestamp):
+    unix_timestamp /=1000
+    ts = int(unix_timestamp)
+    start = datetime.fromtimestamp(ts, tz= pytz.UTC)
+    return start
+
+def aggregate_cores():
+    mem_file_path = f'part4/plot/results_4_3/memcached_1.txt'
+    cpu_file_path = f'part4/plot/results_4_3/jobs_1.txt'
+
+    result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
+    cpu_file = pd.read_csv(cpu_file_path, delim_whitespace=True)
+
+    cpu_cores = []
+    count = 1
+    for index, row in result_mem.iterrows():
+        start = transform_unix_time(row['ts_start'])
+        end = transform_unix_time(row['ts_end'])
+
+        for index2, row2 in cpu_file.iterrows():
+            if (row2['job']=='memcached'):
+                ttime = datetime.strptime(row2['timestamp'],"%Y-%m-%dT%H:%M:%S.%f") 
+                time = ttime.replace(tzinfo=utc)
+                if (time >= start and time <= end):
+                    commas = row2['cores'].find(',')
+                    if commas != -1 :
+                        count = 2
+                    else:
+                        count = 1
+
+        cpu_cores.append(count)
+
+    result_mem.insert(1, "cpu_cores", cpu_cores, True)
+    result_mem.to_csv(mem_file_path, sep='\t')
 
   
 if __name__ == "__main__":
-    aggregate()
+    aggregate_times()
+    aggregate_cores()
