@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parsec-canneal
+  labels:
+    name: parsec-canneal
+spec:
+  template:
+    spec:
+      containers:
+      - image: anakli/cca:parsec_canneal
+        name: parsec-canneal
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "1.6"
+            memory: "6Gi"
+          limits:
+            cpu: "4"
+            memory: "8Gi"
+        command: ["/bin/sh"]
+        args: ["-c", "./run -a run -S parsec -p canneal -i native -n 4"]
+      restartPolicy: Never
+      nodeSelector:
+        cca-project-nodetype: "node-b-4core"
