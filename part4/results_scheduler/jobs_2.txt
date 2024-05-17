@@ -1,0 +1,105 @@
+2024-05-17T13:24:30.040746 start scheduler
+2024-05-17T13:24:30.079281 start memcached [0,1] 2
+2024-05-17T13:24:30.576330 start dedup [1] 1
+2024-05-17T13:24:30.576418 pause dedup
+2024-05-17T13:24:31.063179 start blackscholes [2,3] 2
+2024-05-17T13:24:37.488101 update_cores memcached [0]
+2024-05-17T13:24:37.488135 unpause dedup
+2024-05-17T13:24:38.800609 update_cores memcached [0,1]
+2024-05-17T13:24:38.800645 pause dedup
+2024-05-17T13:24:40.107412 update_cores memcached [0]
+2024-05-17T13:24:40.107444 unpause dedup
+2024-05-17T13:24:41.416744 update_cores memcached [0,1]
+2024-05-17T13:24:41.416782 pause dedup
+2024-05-17T13:24:42.724013 update_cores memcached [0]
+2024-05-17T13:24:42.724054 unpause dedup
+2024-05-17T13:24:45.288883 update_cores memcached [0,1]
+2024-05-17T13:24:45.288922 pause dedup
+2024-05-17T13:25:35.512923 end blackscholes
+2024-05-17T13:25:36.112860 start canneal [2,3] 4
+2024-05-17T13:25:38.159123 update_cores memcached [0]
+2024-05-17T13:25:38.159158 unpause dedup
+2024-05-17T13:25:47.097085 update_cores memcached [0,1]
+2024-05-17T13:25:47.097125 pause dedup
+2024-05-17T13:26:17.777932 update_cores memcached [0]
+2024-05-17T13:26:17.777963 unpause dedup
+2024-05-17T13:26:33.140385 end dedup
+2024-05-17T13:26:33.733587 start vips [1] 1
+2024-05-17T13:26:37.819519 update_cores memcached [0,1]
+2024-05-17T13:26:37.819560 pause vips
+2024-05-17T13:27:58.138465 update_cores memcached [0]
+2024-05-17T13:27:58.138502 unpause vips
+2024-05-17T13:28:12.633445 end canneal
+2024-05-17T13:28:12.941448 start ferret [2,3] 2
+2024-05-17T13:28:27.964318 update_cores memcached [0,1]
+2024-05-17T13:28:27.964352 pause vips
+2024-05-17T13:29:17.749535 update_cores memcached [0]
+2024-05-17T13:29:17.749572 unpause vips
+2024-05-17T13:29:19.067181 update_cores memcached [0,1]
+2024-05-17T13:29:19.067212 pause vips
+2024-05-17T13:29:21.652237 update_cores memcached [0]
+2024-05-17T13:29:21.652267 unpause vips
+2024-05-17T13:29:22.970203 update_cores memcached [0,1]
+2024-05-17T13:29:22.970235 pause vips
+2024-05-17T13:29:24.280927 update_cores memcached [0]
+2024-05-17T13:29:24.280962 unpause vips
+2024-05-17T13:29:25.596832 update_cores memcached [0,1]
+2024-05-17T13:29:25.596866 pause vips
+2024-05-17T13:29:47.313196 update_cores memcached [0]
+2024-05-17T13:29:47.313228 unpause vips
+2024-05-17T13:29:48.622889 update_cores memcached [0,1]
+2024-05-17T13:29:48.622924 pause vips
+2024-05-17T13:29:49.931743 update_cores memcached [0]
+2024-05-17T13:29:49.931783 unpause vips
+2024-05-17T13:29:52.522331 update_cores memcached [0,1]
+2024-05-17T13:29:52.522383 pause vips
+2024-05-17T13:29:53.831047 update_cores memcached [0]
+2024-05-17T13:29:53.831081 unpause vips
+2024-05-17T13:29:57.691379 update_cores memcached [0,1]
+2024-05-17T13:29:57.691417 pause vips
+2024-05-17T13:31:48.137336 end ferret
+2024-05-17T13:31:48.569762 start freqmine [2,3] 2
+2024-05-17T13:31:57.999665 update_cores memcached [0]
+2024-05-17T13:31:57.999697 unpause vips
+2024-05-17T13:32:00.577965 update_cores memcached [0,1]
+2024-05-17T13:32:00.577996 pause vips
+2024-05-17T13:32:02.120044 update_cores memcached [0]
+2024-05-17T13:32:02.120086 unpause vips
+2024-05-17T13:32:05.971119 update_cores memcached [0,1]
+2024-05-17T13:32:05.971156 pause vips
+2024-05-17T13:32:27.706124 update_cores memcached [0]
+2024-05-17T13:32:27.706157 unpause vips
+2024-05-17T13:32:37.920104 update_cores memcached [0,1]
+2024-05-17T13:32:37.920141 pause vips
+2024-05-17T13:34:07.243816 update_cores memcached [0]
+2024-05-17T13:34:07.243855 unpause vips
+2024-05-17T13:34:11.102123 update_cores memcached [0,1]
+2024-05-17T13:34:11.102160 pause vips
+2024-05-17T13:34:12.413518 update_cores memcached [0]
+2024-05-17T13:34:12.413557 unpause vips
+2024-05-17T13:34:17.539662 update_cores memcached [0,1]
+2024-05-17T13:34:17.539698 pause vips
+2024-05-17T13:34:39.241333 update_cores memcached [0]
+2024-05-17T13:34:39.241365 unpause vips
+2024-05-17T13:34:40.550177 update_cores memcached [0,1]
+2024-05-17T13:34:40.550211 pause vips
+2024-05-17T13:34:41.861442 update_cores memcached [0]
+2024-05-17T13:34:41.861477 unpause vips
+2024-05-17T13:34:43.175016 update_cores memcached [0,1]
+2024-05-17T13:34:43.175047 pause vips
+2024-05-17T13:35:17.659880 update_cores memcached [0]
+2024-05-17T13:35:17.659920 unpause vips
+2024-05-17T13:35:27.872370 update_cores memcached [0,1]
+2024-05-17T13:35:27.872403 pause vips
+2024-05-17T13:35:47.029874 update_cores memcached [0]
+2024-05-17T13:35:47.029908 unpause vips
+2024-05-17T13:35:57.246026 update_cores memcached [0,1]
+2024-05-17T13:35:57.246057 pause vips
+2024-05-17T13:36:02.614743 end freqmine
+2024-05-17T13:36:02.697259 update_cores vips [2,3]
+2024-05-17T13:36:02.732590 unpause vips
+2024-05-17T13:36:15.411114 end vips
+2024-05-17T13:36:16.360060 start radix [1,2,3] 2
+2024-05-17T13:36:37.954269 end radix
+2024-05-17T13:36:38.231585 update_cores memcached [0,1]
+2024-05-17T13:36:38.231639 end scheduler
