@@ -77,7 +77,7 @@ def create_figures():
 
         fig = plt.figure(figsize=(8, 5))
         length = int(end_sec - start_sec)
-        plt_95p, plt_jobs, plt_cpu = fig.subplots(3, 1, gridspec_kw={'height_ratios': [6, 3, 6]})
+        plt_95p, plt_jobs = fig.subplots(2, 1, gridspec_kw={'height_ratios': [6, 3]})
 
         plt_jobs.set_yticks(range(7))
         plt_jobs.set_yticklabels(benchmarks_labels)
@@ -120,6 +120,27 @@ def create_figures():
         lines, labels = plt_95p.get_legend_handles_labels()
         lines2, labels2 = plt_95p_right.get_legend_handles_labels()
         plt_95p_right.legend(lines + lines2, labels + labels2, loc='upper left')  
+        plt.subplots_adjust(hspace=0.2, bottom=0.2)
+
+        plt.tight_layout()
+        plt.show()
+
+        fig = plt.figure(figsize=(8, 5))
+        length = int(end_sec - start_sec)
+        plt_cpu, plt_jobs = fig.subplots(2, 1, gridspec_kw={'height_ratios': [6, 3]})
+
+        plt_jobs.set_yticks(range(7))
+        plt_jobs.set_yticklabels(benchmarks_labels)
+        plt_jobs.set_ylim([-1, 7])
+        plt_jobs.set_xlabel("Time [s]")
+        plt_jobs.set_xlim([0, length])
+        plt_jobs.set_xticks(range(0, length + 1, 50))
+        plt_jobs.grid(True)
+        for j, name in enumerate(benchmarks):
+            color = colors[j]
+            for k,_ in enumerate(runtimes_start[name]):
+                plt_jobs.hlines(y=j, xmin=runtimes_start[name][k], xmax=runtimes_end[name][k], color=color, linewidth=3)
+            plt_jobs.plot(runtimes_end[name][-1],j,'x', color=color)
 
         plt_cpu.set_xlim([0, length])
         plt_cpu.set_xlabel("Time [s]")
@@ -152,8 +173,6 @@ def create_figures():
 
         plt.tight_layout()
         plt.show()
-        print(i)
-        print(len(start))
 
         #fig.savefig(f'part4/plot/figure_4_3_run{i}.png')
 
