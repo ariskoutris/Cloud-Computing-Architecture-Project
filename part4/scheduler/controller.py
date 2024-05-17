@@ -34,35 +34,28 @@ class Controller:
         self.logger.job_start(
             Job.MEMCACHED, init_memcached_cores, init_memcached_threads
         )
-        
-    def _remove_job_containers(self) -> bool:
-        for job, container in list(self._containers.items()):  # Use list to create a static list of items
-            if container.status != "exited":
-                container.stop()  # Stop the container if it is running
-                container.wait()  # Wait until the container is completely stopped
-            container.remove()  # Remove the container
-            self._containers.pop(job)  # Remove the container from the dictionary
-        return True
-
             
     def run_scheduler(self) -> None:
         # TODO: Schedule the job execution here
         # Note, use get_system_cpu_usage() function in `utils` to track CPU percentages per core.
         # Don't change this line. The first value will be 0 so it needs to be ignored.
-        self._remove_job_containers()
+        
+        job_threads = {Job.BLACKSCHOLES: 2, Job.DEDUP: 1, Job.VIPS: 1, Job.RADIX: 2, Job.CANNEAL: 4, Job.FERRET: 2, Job.FREQMINE: 2}
+        jobsA = [Job.DEDUP, Job.VIPS, Job.RADIX]
+        jobsB = [Job.BLACKSCHOLES, Job.CANNEAL, Job.FERRET, Job.FREQMINE]
+        
         get_system_cpu_usage()
         memcached_proc = psutil.Process(self._memcached_pid)
         memcached_proc.cpu_percent()
+        
         memcached_cores_prev = self._memcached_num_cores
         memcached_cores = self._memcached_num_cores
         
-        job_threads = {Job.BLACKSCHOLES: 2, Job.DEDUP: 1, Job.VIPS: 1, Job.RADIX: 2, Job.CANNEAL: 4, Job.FERRET: 2, Job.FREQMINE: 2}
-        jobsA = [Job.BLACKSCHOLES, Job.DEDUP, Job.VIPS, Job.RADIX]
-        jobsB = [Job.CANNEAL, Job.FERRET, Job.FREQMINE]
         active_jobA_id, active_jobB_id = 0, 0
         self._job_start(jobsA[active_jobA_id], ["1"], job_threads[jobsA[active_jobA_id]])
         self._job_pause(jobsA[active_jobA_id])
         self._job_start(jobsB[active_jobB_id], ["2", "3"], job_threads[jobsB[active_jobB_id]])
+        
         start=datetime.now()
         i = 0
         elapsed_time = 1.25
@@ -76,6 +69,7 @@ class Controller:
                 print(f"Total CPU usage: {total_cpu_usage}%")
                 print(f"Elapsed time: {datetime.now()-start}s")
                 print(f'Remaining Jobs:\n{jobsA[active_jobA_id:]}\n{jobsB[active_jobB_id:]}')
+                print()
                 i = 0
             
             if elapsed_time > 1:
@@ -119,17 +113,32 @@ class Controller:
                     active_jobA_id += 1
                     if active_jobA_id < len(jobsA):
                         self._job_start(jobsA[active_jobA_id], jobsA_cores, job_threads[jobsA[active_jobA_id]])
-                        
+                    else:
+                        if active_jobB_id < len(jobsB):
+                            jobsB_cores = ["1", "2", "3"] if self._memcached_num_cores == 1 else ["2", "3"]
+                            self._update_cores(jobsB[active_jobB_id], jobsB_cores)
+                            self._job_unpause(jobsB[active_jobB_id])
+                            print(f"Updating cores of job {jobsB[active_jobB_id].value} to {jobsB_cores}...")
+                            print(f"Unpausing job {jobsB[active_jobB_id].value}...")
+
             if active_jobB_id < len(jobsB):
                 if self._job_status(jobsB[active_jobB_id]) == "exited":
                     self._job_end(jobsB[active_jobB_id])
                     active_jobB_id += 1
                     if active_jobB_id < len(jobsB):
                         self._job_start(jobsB[active_jobB_id], jobsB_cores, job_threads[jobsB[active_jobB_id]])   
+                    else:
+                        if active_jobA_id < len(jobsA):
+                            jobsA_cores = ["1", "2", "3"] if self._memcached_num_cores == 1 else ["2", "3"]
+                            self._update_cores(jobsA[active_jobA_id], jobsB_cores)
+                            self._job_unpause(jobsA[active_jobA_id])
+                            print(f"Unpausing job {jobsA[active_jobA_id].value}...")
+                            print(f"Updating cores of job {jobsA[active_jobA_id].value} to {jobsA_cores}...")
                         
             sleep(0.25)
             elapsed_time += 0.25
 
+        self._set_memcached_cores(["0", "1"])
         if not self._end():
             raise Exception("Error when shutting down scheduler.")
 
@@ -217,7 +226,7 @@ class Controller:
         if self._containers.get(job) is None:
             print(f"No associated container found with job {job.value}.")
             return False
-        self.logger.job_pause(job=job)
+        self.logger.job_unpause(job=job)
         self._containers.get(job).unpause()
         self._containers.get(job).reload()
         return True
