@@ -47,11 +47,11 @@ def aggregate():
 
 def aggregate_times():
 
-    mem_file_path = f'part4/results_scheduler/mcperf_1.txt'
+    mem_file_path = f'part4/results/4_4/mcperf.txt'
     result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
-    start = 1715948085155
-    end = 1715949285667
-    intervals = 120
+    start = 1715958568066
+    end = 1715959468641
+    intervals = 180
     counter = ((end - start)/intervals)
     ts_start = []
     ts_end = []
@@ -64,7 +64,7 @@ def aggregate_times():
 
     result_mem.insert(18, "ts_start", ts_start, True)
     result_mem.insert(19, "ts_end", ts_end, True)
-    mem_file_path = f'part4/plot/results_4_3/memcached_1.txt'
+    mem_file_path = f'part4/plot/results_4_3/memcached_3.txt'
     result_mem.to_csv(mem_file_path, sep='\t')
 
 def transform_unix_time(unix_timestamp):
@@ -74,8 +74,8 @@ def transform_unix_time(unix_timestamp):
     return start
 
 def aggregate_cores():
-    mem_file_path = f'part4/plot/results_4_3/memcached_1.txt'
-    cpu_file_path = f'part4/plot/results_4_3/jobs_1.txt'
+    mem_file_path = f'part4/plot/results_4_3/memcached_3.txt'
+    cpu_file_path = f'part4/plot/results_4_3/jobs_3.txt'
 
     result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
     cpu_file = pd.read_csv(cpu_file_path, delim_whitespace=True)
