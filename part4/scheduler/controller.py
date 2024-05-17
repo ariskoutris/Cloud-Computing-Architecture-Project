@@ -117,7 +117,8 @@ class Controller:
                         if active_jobB_id < len(jobsB):
                             jobsB_cores = ["1", "2", "3"] if self._memcached_num_cores == 1 else ["2", "3"]
                             self._update_cores(jobsB[active_jobB_id], jobsB_cores)
-                            self._job_unpause(jobsB[active_jobB_id])
+                            if self._job_status(jobsB[active_jobB_id]) == "paused":
+                                self._job_unpause(jobsB[active_jobB_id])
                             print(f"Updating cores of job {jobsB[active_jobB_id].value} to {jobsB_cores}...")
                             print(f"Unpausing job {jobsB[active_jobB_id].value}...")
 
@@ -131,7 +132,8 @@ class Controller:
                         if active_jobA_id < len(jobsA):
                             jobsA_cores = ["1", "2", "3"] if self._memcached_num_cores == 1 else ["2", "3"]
                             self._update_cores(jobsA[active_jobA_id], jobsB_cores)
-                            self._job_unpause(jobsA[active_jobA_id])
+                            if self._job_status(jobsA[active_jobA_id]) == "paused":
+                                self._job_unpause(jobsA[active_jobA_id])
                             print(f"Unpausing job {jobsA[active_jobA_id].value}...")
                             print(f"Updating cores of job {jobsA[active_jobA_id].value} to {jobsA_cores}...")
                         
