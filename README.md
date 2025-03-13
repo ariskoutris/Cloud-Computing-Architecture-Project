@@ -87,7 +87,7 @@ $ cd part4
 $ export KOPS_STATE_STORE=gs://cca-eth-2024-group-018-<ethid>/
 $ ./deploy_cluster.sh
 $ ./setup_memcached.sh
-$ ./run_benchmark.sh
+$ ./memcached_benchmark.sh
 $ ./delete_cluster.sh
 ```
 Note: The cluster configuration is stored in the bucket gs://cca-eth-2024-group-018-ethzid. Make sure to replace ethzid with your ETH username in the following file: [part4.yaml](part4/part4.yaml)
