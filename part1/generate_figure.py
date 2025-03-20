@@ -49,4 +49,4 @@ if __name__ == "__main__":
         result_dfs[interference_type] = pd.read_csv(file_path)
         
     fig = create_figure(result_dfs)
-    fig.savefig('figure_1a.png', dpi=300)
+    fig.savefig('plots/figure_1a.png', dpi=300)

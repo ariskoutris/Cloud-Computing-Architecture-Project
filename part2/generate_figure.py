@@ -57,7 +57,7 @@ def create_figure(df_list):
     return fig
     
 if __name__ == "__main__":
-    file_path = f'part2/results_B_flipped_cols.csv'
+    file_path = f'results_B/results_B_flipped_cols.csv'
     result_dfs = pd.read_csv(file_path)
     fig = create_figure(result_dfs)
-    fig.savefig('figure_2b.png')
+    fig.savefig('plots/figure_2b.png')
