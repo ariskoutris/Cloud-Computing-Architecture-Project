@@ -55,10 +55,10 @@ def create_figure(meas, id):
     
 if __name__ == "__main__":
     for id, configuration in enumerate(file_map):
-        file_path = f'part4/plot/results_4_1d/memcached_results_{configuration}.txt'
+        file_path = f'results/4_1d/memcached_results_{configuration}.txt'
         conf = configurations[id]
         measurements = pd.read_csv(file_path, delim_whitespace=True)
         fig = create_figure(measurements, id)
-        fig.savefig(f'part4/plot/figure_4_1d_{configuration}.png', dpi=300)
+        fig.savefig(f'plots/figure_4_1d_{configuration}.png', dpi=300)
         
     

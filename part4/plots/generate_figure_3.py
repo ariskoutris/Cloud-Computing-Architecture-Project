@@ -50,8 +50,8 @@ def transform_date_string(str):
 def create_figures():
 
     for i in range(3):
-        mem_file_path = f'part4/plot/results_4_4/memcached_{i}.txt'
-        res_file_path = f'part4/plot/results_4_4/jobs_{i}.txt'
+        mem_file_path = f'part4/plots/results_4_3/memcached_{i}.txt'
+        res_file_path = f'part4/plots/results_4_3/jobs_{i}.txt'
         result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
         result_items = pd.read_csv(res_file_path, delim_whitespace=True)
 
@@ -99,17 +99,17 @@ def create_figures():
 
         plt_95p.set_ylabel("95th Percentile Latency [ms]")
         plt_95p.tick_params(axis='y', labelcolor='tab:blue')
-        plt_95p.set_ylim([0, 1.5])
-        plt_95p.set_yticks(np.arange(0, 1.6, 0.1))
+        plt_95p.set_ylim([0, 1.2])
+        plt_95p.set_yticks(np.arange(0, 1.3, 0.1))
         start = get_memcached_start(result_mem["ts_start"],start_sec)
 
         plt_95p_right = plt_95p.twinx()
         plt_95p_right.set_ylabel("Achieved QPS")
-        plt_95p_right.set_ylim([0,150000])
-        label_map = {l: f'{l}k' for l in range(0, 151, 10)}
+        plt_95p_right.set_ylim([0,120000])
+        label_map = {l: f'{l}k' for l in range(0, 121, 10)}
         label_lst = label_map.values()
 
-        plt_95p_right.set_yticks(range(0, 151000, 10000))
+        plt_95p_right.set_yticks(range(0, 121000, 10000))
         plt_95p_right.set_yticklabels(label_lst)
         plt_95p_right.tick_params(axis='y', labelcolor='tab:green')
 
@@ -156,8 +156,8 @@ def create_figures():
 
         plt_cpu_right = plt_cpu.twinx()
         plt_cpu_right.set_ylabel("Achieved QPS")
-        plt_cpu_right.set_ylim([0,150000])
-        plt_cpu_right.set_yticks(range(0, 151000, 10000))
+        plt_cpu_right.set_ylim([0,120000])
+        plt_cpu_right.set_yticks(range(0, 121000, 10000))
         plt_cpu_right.set_yticklabels(label_lst)
         plt_cpu_right.tick_params(axis='y', labelcolor='tab:green')
 
@@ -173,9 +173,8 @@ def create_figures():
 
         plt.tight_layout()
         plt.show()
-        print(len(start))
 
-        #fig.savefig(f'part4/plot/figure_4_3_run{i}.png')
+        #fig.savefig(f'part4/plots/figure_4_3_run{i}.png')
 
   
 if __name__ == "__main__":

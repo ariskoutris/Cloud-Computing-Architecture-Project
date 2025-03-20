@@ -23,8 +23,8 @@ def get_memcached_start(unix_timestamps, init):
 
 def aggregate():
 
-    mem_file_path = f'part4/results/memcached_results_T2_C2.txt'
-    cpu_file_path = f'part4/results/cpu_util_T2_C2.csv'
+    mem_file_path = f'results/memcached_results_T2_C2.txt'
+    cpu_file_path = f'results/cpu_util_T2_C2.csv'
     result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
     cpu_file = pd.read_csv(cpu_file_path)
     result_mem['ts_start']= result_mem['ts_start']/1000
@@ -47,7 +47,7 @@ def aggregate():
 
 def aggregate_times():
 
-    mem_file_path = f'part4/results/4_4/mcperf_6sec_3.txt'
+    mem_file_path = f'results/4_4/mcperf_6sec_3.txt'
     result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
     start = 1715968778109
     end = 1715969678641
@@ -64,7 +64,7 @@ def aggregate_times():
 
     result_mem.insert(18, "ts_start", ts_start, True)
     result_mem.insert(19, "ts_end", ts_end, True)
-    mem_file_path = f'part4/plot/results_4_4/memcached_2.txt'
+    mem_file_path = f'plots/results_4_4/memcached_2.txt'
     result_mem.to_csv(mem_file_path, sep='\t')
 
 def transform_unix_time(unix_timestamp):
@@ -74,8 +74,8 @@ def transform_unix_time(unix_timestamp):
     return start
 
 def aggregate_cores():
-    mem_file_path = f'part4/plot/results_4_4/memcached_2.txt'
-    cpu_file_path = f'part4/plot/results_4_4/jobs_2.txt'
+    mem_file_path = f'plots/results_4_4/memcached_2.txt'
+    cpu_file_path = f'plots/results_4_4/jobs_2.txt'
 
     result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
     cpu_file = pd.read_csv(cpu_file_path, delim_whitespace=True)

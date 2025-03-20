@@ -49,9 +49,9 @@ def create_figure(df_list, xlim=(0,125000), ylim=(0,2.2), use_error_bars=True):
 if __name__ == "__main__":
     result_dfs = {}
     for id, configuration in enumerate(file_map):
-        file_path = f'part4/plot/results_4_1a/memcached_results_{configuration}.csv'
+        file_path = f'results/4_1a/memcached_results_{configuration}.csv'
         conf = configurations[id]
         result_dfs[conf] = pd.read_csv(file_path)
         
     fig = create_figure(result_dfs)
-    fig.savefig(f'part4/plot/figure_4_1a.png', dpi=300)
+    fig.savefig(f'plots/figure_4_1addasas.png', dpi=300)
