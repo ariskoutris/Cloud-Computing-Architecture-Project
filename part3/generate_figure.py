@@ -63,8 +63,8 @@ def transform_date_string(str):
 def create_figures():
 
     for i in range(3):
-        mem_file_path = f'part3/plot/memcached_results_run_{i}.txt'
-        res_file_path = f'part3/plot/results_run_{i}.json'
+        mem_file_path = f'results/memcached_results_run_{i}.txt'
+        res_file_path = f'results/results_run_{i}.json'
         result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
         res_file = open(res_file_path)
         results = json.load(res_file)
@@ -137,14 +137,14 @@ def create_figures():
         plt.subplots_adjust(hspace=0.2, bottom=0.2)
         fig.tight_layout()
         #plt.show()
-        fig.savefig(f'part3/plot/figure_3_run{i}.png')
+        fig.savefig(f'plots/figure_3_run{i}.png')
 
 
 def create_unified_figure():
 
     for i in range(3):
-        mem_file_path = f'part3/plot/memcached_results_run_{i}.txt'
-        res_file_path = f'part3/plot/results_run_{i}.json'
+        mem_file_path = f'results/memcached_results_run_{i}.txt'
+        res_file_path = f'results/results_run_{i}.json'
         result_mem = pd.read_csv(mem_file_path, delim_whitespace=True)
         res_file = open(res_file_path)
         results = json.load(res_file)
@@ -235,7 +235,7 @@ def create_unified_figure():
 
         fig.tight_layout()
         #plt.show()
-        fig.savefig(f'part3/plot/figure_3_unified_run{i}.png')
+        fig.savefig(f'plots/figure_3_unified_run{i}.png')
 
 
 
