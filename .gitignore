@@ -1,1 +1,37 @@
+# macOS
 .DS_Store
+
+# VS Code
+.vscode/
+
+# Python artifacts (if using Python)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+env/
+venv/
+ENV/
+.env/
+
+# Build and distribution artifacts
+build/
+dist/
+*.egg-info/
+
+# Log files and temporary files
+*.log
+tmp/
+temp/
+
+# Shell script backup files
+*.sh~
+
+# Kubernetes/Docker generated files (if any)
+*.yaml~
+*.yml~
+
+# Other temporary or cache files
+*.swp
+*.swo
