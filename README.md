@@ -6,21 +6,8 @@
 ### Spring Semester 2024
 ### Professor: [Ana Klimovic](https://anakli.inf.ethz.ch)
 
-
-<a href="#">
-    <img src="https://img.shields.io/badge/Python-3.10-1cb855">
-</a>
-<a href="#">
-    <img src="https://img.shields.io/badge/Kubernetes-v1.29.2-0388fc">
-</a>
-<a href="#">
-    <img src="https://img.shields.io/badge/Cloud-Google-F4B400">
-</a>
-<br>
-<a href="#">
-    <img src="https://img.shields.io/badge/License-MIT-8a0023">
-</a>
-
+###
+<a href="#"><img src="https://img.shields.io/badge/Python-3.10-1cb855"></a> <a href="#"><img src="https://img.shields.io/badge/Kubernetes-v1.29.2-0388fc"></a> [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?logo=google-cloud&logoColor=white)](#) <br><a href="#"><img src="https://img.shields.io/badge/License-MIT-8a0023"></a>
 </div>
 
 ## Overview
